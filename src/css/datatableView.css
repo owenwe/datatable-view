@@ -1,0 +1,12 @@
+.refresh-datatable-btn-container {
+    padding-right:20px;
+}
+
+.dtv-action-column {
+    min-width:30px !important;
+    max-width:35px;
+}
+
+div.add-button-container button {
+	margin-right:5px !important;
+}
