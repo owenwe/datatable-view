@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<project name="datatable-view" default="help" basedir=".">
+	<description>
+		Compile and deploy ant script for the DataTableView jQuery plugin.
+	</description>
+	
+	<condition property="is-windows">
+        <os family="windows" />
+    </condition>
+	
+	<property name="yui" value="yuicompressor-2.4.8.jar" />
+	<property name="source.dir" value="dist" />
+	
+	
+	<target name="dist" depends="compile" description="combines the source files into a single .js/.css source file, minifies them, and generates the documentation files">
+	    <antcall target="doc" />
+	</target>
+	
+	<!-- minify js and css files -->
+	<target name="compile" depends="combine" description="minify .js and .css files">
+		<exec dir="${basedir}" executable="java">
+		    <arg line="-jar lib/${yui} -o dist/datatable-view.min.js dist/datatable-view.js" />
+		</exec>
+		<exec dir="${basedir}" executable="java">
+		  <arg line="-jar lib/${yui} --line-break 0 -o dist/datatable-view.min.css dist/datatable-view.css" />
+		</exec>
+	</target>
+	
+	<!-- combine js and css files -->
+	<target name="combine" description="combines .js and .css files">
+		<concat destfile="${basedir}/dist/datatable-view.css" ignoreempty="yes" fixlastline="yes">
+			<filelist dir="${basedir}/src/css">
+				<file name="modalForm.css" />
+				<file name="datatableView.css" />
+				<file name="columnVisibilityControl.css" />
+				<file name="formNavigation.css" />
+				<file name="typeahead-ext.css" />
+			</filelist>
+		</concat>
+		<concat destfile="${basedir}/dist/datatable-view.js" ignoreempty="yes" fixlastline="yes">
+			<filelist dir="${basedir}/src">
+				<file name="start.js" />
+				
+				<!-- templates -->
+				<file name="templates/actionProgressPanel/view.js" />
+				<file name="templates/formNavigation/view.js" />
+				<file name="templates/modalFormView/view.js" />
+				<file name="templates/columnVisibilityControl/groups.js" />
+				<file name="templates/columnVisibilityControl/noGroups.js" />
+				<file name="templates/datatableView/view.js" />
+				
+				<!-- functions -->
+				<file name="functions/primaryKeyColumnRenderModify.js" />
+				<file name="functions/primaryKeyColumnRenderReadonly.js" />
+				<file name="functions/primaryKeyColumnRenderModifyOnly.js" />
+				<file name="functions/ajaxProcessData.js" />
+				
+				<!-- classes/objects -->
+				<file name="controls/formInputs/hidden.js" />
+				<file name="controls/formInputs/text.js" />
+                <file name="controls/formInputs/buttonToggle.js" />
+                <file name="controls/formInputs/buttonGroup.js" />
+                <file name="controls/formInputs/select.js" />
+                <file name="controls/formInputs/number.js" />
+                <file name="controls/formInputs/datepicker.js" />
+				<file name="controls/formInputs/typeahead.js" />
+				<file name="controls/actionProgressPanel.js" />
+				<file name="controls/columnVisibilityControl.js" />
+				<file name="controls/formNavigation.js" />
+				<file name="controls/modalForm.js" />
+				<file name="controls/datatableView.js" />
+				
+				<!-- enums -->
+                <file name="enums/modes.js" />
+                <file name="enums/layoutOrientations.js" />
+				<file name="enums/formActionTypes.js" />
+				
+				<!-- public plugin functions -->
+				<file name="functions/public/timestampCellRender.js" />
+				
+				<!-- configuration properties -->
+				<file name="defaults.js" />
+				
+				<file name="end.js" />
+			</filelist>
+			
+		</concat>
+	</target>
+	
+	<target name="doc" description="generates the documentation">
+        <delete includeemptydirs="true">
+            <fileset dir="docs" includes="**/*" />
+        </delete>
+        <exec dir="${basedir}" osfamily="windows" executable="cmd">
+            <arg line="/c" />
+            <arg line="jsdoc" />
+        	<arg line="${source.dir}" />
+        	<arg line="-c conf.json" />
+        </exec>
+        <exec dir="${basedir}" osfamily="unix" executable="jsdoc">
+            <arg line="${source.dir}" />
+        	<arg line="-c conf.json" />
+        </exec>
+    </target>
+	
+	<!-- Help Target -->
+    <target name="help">
+        <echo message="" />
+        <echo message="DataTable View Ant Build Script" />
+        <echo message="" />
+		<echo message="compile" />
+		<echo message="combines and minifies source files into datatable-view.min.js and datatable-view.min.css" />
+		<echo message="" />
+    	<echo message="combine" />
+    	<echo message="combines .js and .css files in the src directory and creates datatable-view.js and datatable-view.css in the dist directory" />
+    	<echo message="" />
+        <echo message="Help" />
+        <echo message="This message information" />
+    </target>
+	
+</project>

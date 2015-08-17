@@ -1,0 +1,13 @@
+.modal-xl {
+    width:1024px;
+}
+
+.text-left-force {
+	text-align:left !important;
+}
+.text-right-force {
+    text-align:right !important;
+}
+.text-center-force {
+    text-align:center !important;
+}

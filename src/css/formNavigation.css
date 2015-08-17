@@ -1,0 +1,12 @@
+div.modal-header .datatable-page-form-navigation-group {
+    position:relative;
+    float:right;
+    top:-30px;
+    right:20px;
+    white-space:nowrap;
+}
+div.modal-header .datatable-page-form-navigation-group div.btn-group {
+	min-width:160px;
+	width:auto!important;
+	width:160px;
+}

@@ -1,0 +1,53 @@
+.column-visibility-container div.btn-group button {
+    margin-left:20px !important;
+    margin-right:5px !important;
+}
+.col-vis-menu > li {
+    padding:5px 20px;
+}
+.col-vis-menu li > h3 {
+    margin-top:2px;
+    text-align:center;
+}
+.col-vis-menu > li:first-child > h3 {
+    padding-right:20px;
+}
+.col-vis-menu > li:first-child {
+    width:320px;
+    padding:5px 0px 5px 20px;
+}
+.col-vis-menu > li:first-child > ul {
+    white-space:normal;
+    border-right:dashed 1px #bbb;
+}
+.col-vis-menu > li:first-child p {
+    text-align:center;
+    margin-top:10px;
+    padding-top:10px;
+    border-top:solid 1px #dedede;
+}
+.col-vis-menu > li:first-child > ul li .checkbox {
+    position:relative !important;
+    display:block !important;
+    margin:3px 0 !important;
+}
+.col-vis-menu > li:first-child > ul li .checkbox label {
+    padding:2px 10px 3px 2px;
+}
+.col-vis-menu > li:first-child > ul li .checkbox input[type="checkbox"] {
+    margin-right:5px;
+    margin-left:10px;
+}
+.col-vis-menu > li:last-child {
+    vertical-align:top;
+}
+.col-vis-menu > li:only-child {
+    padding:5px 20px;
+}
+.col-vis-menu > li:only-child > ul {
+    border-right-style:none;
+    border-right-width:0;
+}
+.col-vis-menu > li:only-child > h3 {
+    padding:0;
+}
