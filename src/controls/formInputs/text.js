@@ -1,21 +1,5 @@
-/**
- * Text input form control, this will create an instance of TextFormInput
- * @class
- * @classdesc This is the most basic input form control. All Form Input View's will have a .type(), .name(), .get(), .set(), validate(), and .reset()
- * @version 1.0.0
- * @param {object}             options                 - configuration options for this View instance
- * @param {string}             options.name            - the value to assign the name attribute on the input
- * @param {string}             options.label           - the display label for the form input
- * @param {object}             [options.inputAttributes={autocomplete:'off', maxlength:'45', class:'form-control input-sm', value:''}/{autocomplete:'off', class:'form-control', rows:'2'}] - the attributes for the form input element
- * @param {boolean}            [options.required=false] - if the form input is required or not
- * @param {boolean}            [options.feedback=true]  - if the bootstrap form input should have feedback elements
- * @param {boolean}            [options.disabled=false] - if true then the form control is initially put into a disabled state
- * @param {boolean}            [options.readonly=false] - if true then the form control is initially put into a readonly state, note if the disabled option is set to true then that state will take priority
- * @param {LAYOUT_ORIENTATION} [options.orientation=$.fn.DataTableView.LAYOUT_ORIENTATION.HORIZONTAL] - the type of layout style for the form input
- * @param {boolean}            [options.textarea=false} - if true then the form input will be a "textarea" and not an "input type=text"
- * @param {object}             [options.events] - an object with event signatures as keys and the handler function as the value
- */
-var TextFormInput = Backbone.View.extend({
+var TextFormInput = Backbone.View.extend(
+/** @lends TextFormInput.prototype */{
     /**
      * @member {object} template - used to render this View
      * @private
@@ -163,11 +147,28 @@ var TextFormInput = Backbone.View.extend({
     
     'className':'form-group input-form-control',
     
-    /** @constructs TextFormInput */
+    /**
+     * Text input form control, this will create an instance of TextFormInput
+     * @typedef {Backbone-View} TextFormInput
+     * @class
+     * @classdesc This is the most basic input form control. All Form Input View's will have a .type(), .name(), .get(), .set(), validate(), and .reset()
+     * @version 1.0.1
+     * @constructs TextFormInput
+     * @extends Backbone-View
+     * @param {object}             options                 - configuration options for this View instance
+     * @param {string}             options.name            - the value to assign the name attribute on the input
+     * @param {string}             options.label           - the display label for the form input
+     * @param {object}             [options.inputAttributes={autocomplete:'off', maxlength:'45', class:'form-control input-sm', value:''}/{autocomplete:'off', class:'form-control', rows:'2'}] - the attributes for the form input element
+     * @param {boolean}            [options.required=false] - if the form input is required or not
+     * @param {boolean}            [options.feedback=true]  - if the bootstrap form input should have feedback elements
+     * @param {boolean}            [options.disabled=false] - if true then the form control is initially put into a disabled state
+     * @param {boolean}            [options.readonly=false] - if true then the form control is initially put into a readonly state, note if the disabled option is set to true then that state will take priority
+     * @param {LAYOUT_ORIENTATION} [options.orientation=$.fn.DataTableView.LAYOUT_ORIENTATION.HORIZONTAL] - the type of layout style for the form input
+     * @param {boolean}            [options.textarea=false} - if true then the form input will be a "textarea" and not an "input type=text"
+     * @param {object}             [options.events] - an object with event signatures as keys and the handler function as the value
+     */
     'initialize':function(options) {
-        //console.log(options);
-        
-        this.version = '1.0.0';
+        this.version = '1.0.1';
         
         this.model = new Backbone.Model(
             $.extend(true, {

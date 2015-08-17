@@ -1,3 +1,8 @@
+/**
+ * Template string for the Form Navigation control.
+ * @memberof $.fn.DataTableView
+ * @constant {string} template_fnv_view
+ */
 var template_fnv_view = [
     '<div class="btn-group center-block" role="group" aria-label="navigation">',
         '<button type="button" class="btn btn-default" aria-label="go to first" data-nav-button="first">',

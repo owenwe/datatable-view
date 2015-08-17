@@ -1,15 +1,10 @@
-/**
- * The main Backbone View used in this plugin.
- * @typedef {Backbone#View} DataTableView
- * @property {Array} formInputs
- * @class
- * @param {object} options - configuration options for the View
- */
-var DataTableView = Backbone.View.extend({
+var DataTableView = Backbone.View.extend(
+/** @lends DataTableView.prototype */
+{
     
     /**
      * {object} template - used to render this View
-     * @private
+     * @protected
      */
     'template':_.template(template_dtv_view),
     
@@ -52,7 +47,8 @@ var DataTableView = Backbone.View.extend({
     },
     
     /**
-     * Calls the .validate() function on each of the form input controls and stores the result in the return object. 
+     * Calls the .validate() function on each of the form input controls and 
+     * stores the result in the return object. 
      * If the modalForm control is not visible then this function returns false.
      * @public
      * @function validate
@@ -62,14 +58,22 @@ var DataTableView = Backbone.View.extend({
         if(this.get('modalForm').get('visible')) {
             var formObj = {}, formObjConfig, keyValue, dataObj, i;
             for(i in this.get('formInputs')) {
-                if(_.indexOf(['select','buttonGroup'], this.get('formInputs')[i].type())>-1) {
-                    formObjConfig = _.findWhere(this.get('tableData').columns, {'data':this.get('formInputs')[i].name()});
-                    keyValue = _.isFinite(formObjConfig.datasource[0][formObjConfig.valueKey]) ? this.get('formInputs')[i].validate()[formObjConfig.data]*1 : this.get('formInputs')[i].validate()[formObjConfig.data];
+                if(_.indexOf(['select','buttonGroup'], 
+                        this.get('formInputs')[i].type())>-1) {
+                    formObjConfig = _.findWhere(this.get('tableData').columns, 
+                        {'data':this.get('formInputs')[i].name()});
+                    keyValue = _.isFinite(
+                        formObjConfig.datasource[0][formObjConfig.valueKey]) ? 
+                            this.get('formInputs')[i].validate()[formObjConfig.data]*1 : 
+                            this.get('formInputs')[i].validate()[formObjConfig.data];
                     var searchObj = {};
                     searchObj[formObjConfig.valueKey] = keyValue;
                     dataObj = _.findWhere(formObjConfig.datasource, searchObj)
                     if(dataObj) {
-                        $.extend(formObj, _.createKeyValueObject(this.get('formInputs')[i].name(),dataObj));
+                        $.extend(formObj, _.createKeyValueObject(
+                            this.get('formInputs')[i].name(),
+                            dataObj
+                        ));
                     }
                 } else {
                     $.extend(formObj, this.get('formInputs')[i].validate());
@@ -79,6 +83,31 @@ var DataTableView = Backbone.View.extend({
         } else {
             return false;
         }
+    },
+    
+    /**
+     * A function that returns the version of not just this object, but all the 
+     * complex objects that this object manages.
+     * @function ColumnFilters#versions
+     * @return {object} A JSON object where the keys represent the class or 
+     * object and the values are the versions.
+     */
+    'versions':function() {
+        var i, fi = _.map(this.get('formInputs'), function(f) {
+            return {'type':f.model.get('type'), 'version':f.version}
+        }), fig = _.groupBy(fi, 'type'), figk = _.keys(fig), ic = {};
+        for(i in figk) {
+            ic[figk[i]] = fig[figk[i]][0].version;
+        }
+        return {
+            'DataTableView':this.version,
+            'DataTable':$.fn.DataTable.version,
+            'FixedColumns':$.fn.dataTable.FixedColumns.version,
+            'ColumnVisibilityControl':this.get('columnVisibilityControl').version,
+            'ModalForm':this.get('modalForm').version,
+            'Input Controls':ic,
+            'ColumnFilters':this.get('columnFilters').versions()
+        };
     },
     
     /**
@@ -92,8 +121,15 @@ var DataTableView = Backbone.View.extend({
         'init.dt':function(e, settings, json) {
             // add the columnfilters control to the interface
             this.$el.prepend(this.model.get('columnFilters').$el);
+            var dt;
             
-            var dt = $(this.model.get('datatable').table().container());
+            if(!this.model.get('url')) {
+                this.model.set('datatable', $(e.target).DataTable().table());
+            } else {
+                dt = $(this.model.get('datatable').table().container());
+            }
+            
+            dt = $(this.model.get('datatable').table().container());
             
             // create refresh data table button
             $('div.refresh-datatable-btn-container', this.$el).append([
@@ -140,6 +176,11 @@ var DataTableView = Backbone.View.extend({
                         this.model.get('datatable').columns(':visible:not(.action-column)').indexes().toArray(),
                         this.model.get('datatable').columns(':visible:not(.action-column)').dataSrc().toArray()
                 );
+                this.$el.trigger('datatableView.columnVisibility.column.change', 
+                    [
+                        this.model.get('datatable').columns(':visible:not(.action-column)').indexes().toArray(),
+                        this.model.get('datatable').columns(':visible:not(.action-column)').dataSrc().toArray()
+                    ]);
             });
             this.listenTo(this.model.get('columnVisibilityControl'), 'columnVisibilityControl.group.change', function(visibleColumnIndexes) {
                 // first hide all columns except the first
@@ -151,6 +192,12 @@ var DataTableView = Backbone.View.extend({
                 this.trigger('datatableView.columnVisibility.column.change', 
                     visibleColumnIndexes,
                     this.model.get('datatable').columns(':visible:not(.action-column)').dataSrc().toArray()
+                );
+                this.$el.trigger('datatableView.columnVisibility.column.change', 
+                    [
+                        visibleColumnIndexes,
+                        this.model.get('datatable').columns(':visible:not(.action-column)').dataSrc().toArray()
+                    ]
                 );
             });
             
@@ -165,6 +212,28 @@ var DataTableView = Backbone.View.extend({
             // check for extra UI
             if(this.model.get('extraUI')) {
                 $('div.custom-ui', dt).append(this.model.get('extraUI'));
+            }
+            
+            // trigger initialized event
+            this.trigger('datatableview.init');
+            this.$el.trigger('datatableview.init')
+        },
+        
+        /**
+         * Event triggered when datatables server-side request has returned 
+         * from the server. This happens for success AND error responses.
+         * TODO we need to catch when the session expires in any ajax call 
+         * and redirect to the login page.
+         * ajax calls:
+         *              datatables xhr response
+         *              datatableview.ajax.error
+         *              columnfilters.ajax.error
+         */
+        'xhr.dt':function(e, settings, json, xhr) {
+            if(!json) {
+                console.log(xhr.getAllResponseHeaders());
+                this.trigger('datatableview.ajax.error', xhr, json);
+                this.$el.trigger('datatableview.ajax.error', [xhr, json]);
             }
         },
         
@@ -186,7 +255,11 @@ var DataTableView = Backbone.View.extend({
             }
             
             // update the header title, action button, show navigation, then the modal
-            this.model.get('modalForm').updateTitle('Create '+this.model.get('tableData').label).updateActionButtonTitle('Create').toggleNavigation(false).show();
+            this.model.get('modalForm').updateTitle('Create '+this.model.get('tableData').label)
+                                       .updateActionButtonTitle('Create')
+                                       .setActionType($.fn.DataTableView.ACTION_TYPES.CREATE)
+                                       .toggleNavigation(false)
+                                       .show();
         },
         
         /**
@@ -200,12 +273,15 @@ var DataTableView = Backbone.View.extend({
                 d = this.get('datatable').row(dIndex, {'page':'current'}).data(),
                 currentIndex = _.indexOf(dIndexes, dIndex), // the index of the row relative to the paged table rows
                 fIndex,
-                actionTitle = [$(e.currentTarget).data('view-only') ? 'View' : 'Edit', this.model.get('tableData').label].join(' ');
+                isView = $(e.currentTarget).data('view-only'),
+                actionTitle = [isView ? 'View' : 'Edit', this.model.get('tableData').label].join(' '),
+                actionType = isView ? $.fn.DataTableView.ACTION_TYPES.NOTHING : $.fn.DataTableView.ACTION_TYPES.EDIT;
             
             if(d) {
                 // tell the modalForm to change the title and action button label
                 this.model.get('modalForm').updateTitle(actionTitle)
                                            .updateActionButtonTitle('Save')
+                                           .setActionType(actionType)
                                            .updateNav(currentIndex, dIndexes.length)
                                            .show();
                 this.setFormInputs(d);
@@ -237,12 +313,33 @@ var DataTableView = Backbone.View.extend({
                 dIndex = this.get('fc').fnGetPosition(domRow),
                 d = this.get('datatable').row(dIndex, {'page':'current'}).data();
             
-            // TODO check if webServiceUrl is good and ajax a delete call
+            // display action panel and progress bar until done
+            // check if webServiceUrl is good and ajax a delete call
             if(this.get('webServiceUrl')) {
-                
+                this.get('modalForm').toggleActionPanel(true, 'removing').show();
+                // send DELETE with id as path param
+                $.ajax({
+                    'context':this,
+                    'url':[
+                       this.get('webServiceUrl'),
+                       d[this.get('tableData').primaryKeyColumn]
+                    ].join('/'),
+                    'method':'DELETE'
+                }).fail(function(jqXHR, textStatus, errorThrown) {
+                    this.get('modalForm').updateActionMessage(textStatus);
+                    this.trigger('datatableview.ajax.error', jqXHR, null);
+                    this.$el.trigger('datatableview.ajax.error', [jqXHR, null]);
+                }).done(function(data, textStatus, jqXHR) {
+                    this.get('modalForm').updateActionLabel('removing ... done');
+                    // update the datatable
+                    this.get('datatable').ajax.reload(null,false);
+                    // hide the modal form and reset the action panel
+                    this.get('modalForm').hide().toggleActionPanel(false);
+                });
             }
             
-            // TODO add broadcast event
+            // trigger event
+            this.trigger('datatableview.row.delete', d);
             this.$el.trigger('datatableview.row.delete', [d]);
         },
         
@@ -255,30 +352,91 @@ var DataTableView = Backbone.View.extend({
         'modalForm.action.click':function(e) {
             var formData = this.validate(),
                 requiredKeys = _.pluck(_.filter(this.get('tableData').columns, function(fi){ return fi.required==true; }), 'data'),
-                missingKeys = _.difference(requiredKeys, _.keys(formData));
+                missingKeys = _.difference(requiredKeys, _.keys(formData)),
+                errMessage;
             
             if(formData && missingKeys.length==0) {
-                this.get('modalForm').toggleActionPanel(true);
+                this.get('modalForm').toggleActionPanel(true, 'saving');
+                
+                // check if webserviceUrl is good and ajax formData to it
+                if(this.get('webServiceUrl')) {
+                    // add / edit
+                    // POST / PUT/*
+                    
+                    switch(this.get('modalForm').getActionType()) {
+                        case $.fn.DataTableView.ACTION_TYPES.EDIT:
+                            if(this.model.get('url')) {
+                                $.ajax({
+                                    'context':this,
+                                    'contentType':'application/json',
+                                    'dataType':'json',
+                                    'url':[
+                                       this.get('webServiceUrl'),
+                                       formData[this.get('tableData').primaryKeyColumn]
+                                    ].join('/'),
+                                    'method':'PUT',
+                                    'data':JSON.stringify(formData),
+                                    'processData':false
+                                }).fail(function(jqXHR, textStatus, errorThrown) {
+                                    this.get('modalForm').updateActionMessage(textStatus);
+                                    this.trigger('datatableview.ajax.error', jqXHR, null);
+                                    this.$el.trigger('datatableview.ajax.error', [jqXHR, null]);
+                                }).done(function(data, textStatus, jqXHR) {
+                                    this.get('modalForm').updateActionLabel('saving ... done');
+                                    // update the datatable
+                                    this.get('datatable').ajax.reload(null,false);
+                                    // hide the modal form and reset the action panel
+                                    this.get('modalForm').hide().toggleActionPanel(false);
+                                });
+                            } else {
+                                this.model.get('datatable')
+                            }
+                            break;
+                        case $.fn.DataTableView.ACTION_TYPES.CREATE:
+                            if(this.model.get('url')) {
+                                $.ajax({
+                                    'context':this,
+                                    'contentType':'application/json',
+                                    'dataType':'json',
+                                    'url':this.get('webServiceUrl'),
+                                    'method':'POST',
+                                    'data':JSON.stringify(formData),
+                                    'processData':false
+                                }).fail(function(jqXHR, textStatus, errorThrown) {
+                                    this.get('modalForm').updateActionMessage(textStatus);
+                                    this.trigger('datatableview.ajax.error', jqXHR, null);
+                                    this.$el.trigger('datatableview.ajax.error', [jqXHR, null]);
+                                }).done(function(data, textStatus, jqXHR) {
+                                    this.get('modalForm').updateActionLabel('saving ... done');
+                                    // update the datatable
+                                    this.get('datatable').ajax.reload(null,false);
+                                    // hide the modal form and reset the action panel
+                                    this.get('modalForm').hide().toggleActionPanel(false);
+                                });
+                            } else {
+                                this.get('datatable').rows().add(formData).draw();
+                                this.get('modalForm').hide().toggleActionPanel(false);
+                            }
+                            break;
+                    }
+                }
                 
                 // broadcasts a datatableview.validate.pass event with: returned validation object
+                this.trigger('datatableview.validate.pass', formData);
                 this.$el.trigger('datatableview.validate.pass', [formData]);
-                
-                // TODO check if webserviceUrl is good and ajax formData to it
-                if(this.get('webServiceUrl')) {
-                    
-                }
             } else {
                 // broadcasts a datatableview.validate.fail event with: returned validation object, data names of the form inputs, failed validation message
-                this.$el.trigger(
-                    'datatableview.validate.fail', 
-                    [
-                         formData,
-                         missingKeys,
-                        'required fields did not validate: ' + _.pluck(_.filter(this.get('tableData').columns, function(fi){ return _.contains(missingKeys, fi.data); }), 'title').join(', ')
-                    ]
-                );
+                errMessage = [
+                    'required fields did not validate:',
+                    _.pluck(
+                        _.filter(this.get('tableData').columns, 
+                            function(fi) { 
+                                return _.contains(missingKeys, fi.data)
+                        }), 'title')
+                ].join(' ');
+                this.trigger('datatableview.validate.fail', formData, missingKeys, errMessage);
+                this.$el.trigger('datatableview.validate.fail', [formData, missingKeys, errMessage])
             }
-            console.log(formData);
         },
         
         'modalForm.visibility.change':function(e, visible) {
@@ -292,15 +450,35 @@ var DataTableView = Backbone.View.extend({
         }
     },
     
+    /**
+     * The main Backbone View used in the DataTableView plugin.
+     * @author Wes Owen wowen@ccctechcenter.org
+     * @typedef {Backbone-View} DataTableView
+     * @class
+     * @classdesc This view renders and controls the DataTableView jQuery plugin.
+     * @version 1.0.1
+     * @constructs DataTableView
+     * @extends Backbone-View
+     * @param {object} options - configuration options for the View
+     */
     'initialize':function(options) {
-        // ASSERTION: the datatableConfig.ajax configuration value must an object so that the context property can be added
-        options.datatableConfig.ajax.context = this;
+        this.version = '1.0.1';
+        // ASSERTION: the datatableConfig.ajax configuration value must an 
+        // object so that the context property can be added
+        if(options.url) {
+            options.datatableConfig.ajax.context = this;
+        }
         
-        // put all options into this View's model
+        /**
+         * The DataTableView view model. This will contain all of the key/value 
+         * properties from the options parameter and those listed here.
+         * @name model
+         * @type {Backbone.Model}
+         * @memberof DataTableView.prototype
+         * @property {Element} container - a link to the DOM element containing 
+         * the DataTableView instance
+         */
         this.model = new Backbone.Model(options);
-        
-        // create and set the columnFilters property
-        this.model.set('columnFilters', new VDataFilters(this.get('columnfiltersConfig')));
         
         // the modalView -- use options.formInputs to generate the bodyContent config property
         var bodyContent = this.get('formInputs').length ? $.map(this.get('formInputs'), function(e,i){return e.$el;}) : null,
@@ -308,14 +486,12 @@ var DataTableView = Backbone.View.extend({
             isReadonly = _.indexOf([$.fn.DataTableView.MODES.DISABLED, $.fn.DataTableView.MODES.READ_ONLY, $.fn.DataTableView.MODES.DATATABLE_ONLY], this.get('mode'))>-1,
             modalConfig = this.get('modalFormConfig');
         if(this.get('formTemplate')) {
-            //console.log(this.model.get('formTemplate'));
             bodyContent = this.get('formTemplate');
             // loop through the formInput array and try to match each control with an element in the formTemplate
             for(i in this.get('formInputs')) {
                 // if there is a matching template container element then put the form control's $el in it
                 fiContainer = $(['*[data-table-view-column="', this.get('formInputs')[i].model.get('name'), '"]'].join(''), bodyContent);
                 if(fiContainer.length) {
-                    //console.log(fiContainer);
                     fiContainer.append(this.get('formInputs')[i].$el);
                 } else {
                     bodyContent.append(this.get('formInputs')[i].$el);
@@ -323,11 +499,26 @@ var DataTableView = Backbone.View.extend({
             }
         }
         
-        if(isReadonly) {
-            $.extend(modalConfig, {'mode':this.get('mode')});
-        }
+        // set a new columnFilters in the model 
+        this.model.set('columnFilters', $.fn.ColumnFilters(this.model.get('columnfiltersConfig')));
         
+        // add the mode to the modalConfig object and create a ModalForm
+        $.extend(modalConfig, {'mode':this.get('mode')});
         this.model.set('modalForm', new ModalForm($.extend(modalConfig, {'bodyContent':bodyContent})));
+        
+        // listen to when filters are added/edited/removed/reset and re-broadcast
+        this.model.get('columnFilters').on('filters.update', function(col, opt) {
+            this.trigger('cf.filters.update', col, opt);
+            this.$el.trigger('cf.filters.update', [col, opt]);
+        }, this);
+        this.model.get('columnFilters').on('filters.reset', function(col, opt) {
+            this.trigger('cf.filters.reset', col, opt);
+            this.$el.trigger('cf.filters.reset', [col, opt]);
+        }, this);
+        this.model.get('columnFilters').on('columnfilters.ajax.error', function() {
+            this.trigger('datatableview.ajax.error', jqXHR, null);
+            this.$el.trigger('datatableview.ajax.error', [jqXHR, null]);
+        }, this);
         
         // render the view after initialized
         this.render();
@@ -336,6 +527,8 @@ var DataTableView = Backbone.View.extend({
     'render':function() {
         // create the DOM elements and place into the View's $el
         this.$el.append(this.template({}));
+        
+        this.$el.prepend(this.model.get('columnFilters').$el);
         
         this.$el.prepend(this.model.get('modalForm').$el)
         
@@ -347,9 +540,11 @@ var DataTableView = Backbone.View.extend({
 });
 
 /**
- * This is the jQuery plugin function for DataTableView
- * @param {Object} config
- * @returns {DataTableView}
+ * This is the jQuery plugin function for DataTableView. To construct, pass in 
+ * a configuration object to the <code>DataTableView()</code> function on a 
+ * single <code>div</code> jQuery selection. e.g. 
+ * <code>$('div#dtv').DataTableView({...})</code>
+ * @namespace $.fn.DataTableView
  */
 $.fn.DataTableView = function(config) {
     // this == jquery object of what was passed
@@ -359,15 +554,37 @@ $.fn.DataTableView = function(config) {
         return;
     }
     
+    if(!_.has(config, 'mode')) {
+        $.extend(config, {'mode':$.fn.DataTableView.defaults.mode})
+    }
+    
     // variables used in this scope
     var container, 
         primaryKeyColumn, 
         protectedConfig, 
-        isReadonly = _.indexOf([$.fn.DataTableView.MODES.DISABLED, $.fn.DataTableView.MODES.READ_ONLY, $.fn.DataTableView.MODES.DATATABLE_ONLY], config.mode)>-1,
+        isReadonly = _.indexOf(
+            [
+                $.fn.DataTableView.MODES.DISABLED, 
+                $.fn.DataTableView.MODES.READ_ONLY
+            ], config.mode)>-1,
         displayTableColumns = [],
         datatableColumns = [], // used to define each column in the datatable
         datatableColumnDefs = [], // the styles and other UI properties for the columns
-        columnfiltersColumns,
+        columnfiltersColumns = [],
+        cfSpecialTypes = [
+            'boolean',
+            'bool',
+            'num',
+            'number',
+            'tinyint',
+            'smallint',
+            'mediumint',
+            'int',
+            'bigint',
+            'double',
+            'float',
+            'decimal'
+        ],
         i = 0; // tableData.columns loop iterator index
     
     // config.tableData.primaryKeyColumn is required
@@ -444,7 +661,10 @@ $.fn.DataTableView = function(config) {
         'data':primaryKeyColumn.data,
         'title':'',
         'cfexclude':true,
-        'render':isReadonly ? primaryKeyColumnReadonlyRender : primaryKeyColumnModifyRender
+        'render':isReadonly ? primaryKeyColumnReadonlyRender : 
+            config.mode===$.fn.DataTableView.MODES.MODIFY_ONLY ? 
+                primaryKeyColumnModifyOnlyRender : 
+                primaryKeyColumnModifyRender
     });
     
     // add an action column definition to the datatableColumnDefs array
@@ -461,16 +681,47 @@ $.fn.DataTableView = function(config) {
      * inputs used when adding or editing a datatable item. 
      */
     displayTableColumns = _.without(config.tableData.columns, primaryKeyColumn);
+    
+    columnfiltersColumns = _.map(
+        _.reject(displayTableColumns, function(c) { 
+            return _.has(c, 'cfexclude')
+        }), function(c) {
+        var r = {'data':c.data, 'title':c.title};
+        if(_.has(c, 'cftype')) {
+            _.extend(r, {'type':c.cftype});
+        } else {
+            _.extend(r, {'type':c.type});
+        }
+        if(_.has(c, 'table')) {
+            _.extend(r, {'table':c.table});
+        }
+        if(_.has(c, 'datasource')) {
+            _.extend(r, {
+                'datasource':c.datasource,
+                'displayKey':c.displayKey,
+                'valueKey':c.valueKey
+            });
+        }
+        
+        // any special types
+        if(_.contains(cfSpecialTypes, r.type)) {
+            $.extend(r, _.omit(c.control, 
+                ['type','table','datasource','displayKey','valueKey']
+            ));
+        }
+        return r;
+    }, this);
+    
     for(i in displayTableColumns) {
         var col = displayTableColumns[i], 
             metaCol = {
                 'data':col.data, // data is the key in the data row object (area)
-                //'name':col.name,
                 'title':col.title,
                 'type':$.fn.DataTableView.defaults.DB_TO_DT_TYPES[col.type.toLowerCase()]
             }, 
-            colClassName = 'text-center', 
+            colClassName = 'text-center',
             inpt = $.extend(true, {'name':col.data, 'label':col.title}, col.control);
+        
         
         // check for the visible property
         _.extend(metaCol, (_.has(col, 'visible') && _.isBoolean(col.visible)) ? {'visible':col.visible} : {'visible':true});
@@ -495,7 +746,8 @@ $.fn.DataTableView = function(config) {
         
         /**
          * Column.render handling
-         * The render data table function can be overridden, otherwise the defaults will be used for certain types
+         * The render data table function can be overridden, otherwise the 
+         * defaults will be used for certain types
          */
         if(_.has(col, 'render')) {
             _.extend(metaCol, {'render':col.render});
@@ -518,11 +770,6 @@ $.fn.DataTableView = function(config) {
                 _.extend(metaCol, {'render': $.fn.DataTableView.timestampCellRender});
             }
             // TODO add more configuration options for dates
-        }
-        
-        // ColumnFilters properties
-        if(_.has(col, 'cfexclude') && _.isBoolean(col.cfexclude)) {
-            _.extend(metaCol, {'cfexclude':col.cfexclude});
         }
         
         datatableColumns.push(metaCol);
@@ -582,7 +829,14 @@ $.fn.DataTableView = function(config) {
                 case 'select':
                     // ASSERTION: col.type==object
                     $.extend(inpt, {
-                        'options':$.map(col.datasource, function(v, idx){ return {'label':v[col.displayKey], 'value':v[col.valueKey]} }),
+                        'options':$.map(col.datasource, function(v, idx) {
+                            return {
+                                'label':_.isFunction(col.displayKey) ?
+                                    col.displayKey(v) :
+                                    v[col.displayKey], 
+                                'value':v[col.valueKey]
+                            }
+                        }),
                         'valueKey':col.valueKey
                     });
                     protectedConfig.formInputsMap[col.data] = new SelectFormInput(inpt);
@@ -610,27 +864,43 @@ $.fn.DataTableView = function(config) {
     this.replaceWith(container);
     $.fn.DataTableView.defaults.container = container;
     
-    // combine and save the defaults with the passed in configuration object and protected configuration options
-    // allow for configuration options to be passed with the constructor, but will need to have some options that can't be overridden
-    $.fn.DataTableView.defaults = $.extend(true, {'el':$.fn.DataTableView.defaults.container}, $.fn.DataTableView.defaults, config, protectedConfig);
+    // finalize column filters config
+    $.fn.DataTableView.defaults.columnfiltersConfig.table = $.fn.DataTableView.defaults.tableData.name;
+    $.fn.DataTableView.defaults.columnfiltersConfig.columns = columnfiltersColumns;
+    
+    /* combine and save the defaults with the passed in configuration object and 
+     * protected configuration options
+     * allow for configuration options to be passed with the constructor, but 
+     * will need to have some options that can't be overridden
+    */
+    $.fn.DataTableView.defaults = $.extend(true, 
+        {
+            'el':$.fn.DataTableView.defaults.container
+        }, 
+        $.fn.DataTableView.defaults, 
+        config, 
+        protectedConfig
+    );
     
     // set the datatableConfig.columns and .columnDefs properties
     $.fn.DataTableView.defaults.datatableConfig.columns = datatableColumns;
     $.fn.DataTableView.defaults.datatableConfig.columnDefs = datatableColumnDefs;
     
-    // finalize column filters config
-    $.fn.DataTableView.defaults.columnfiltersConfig.table = $.fn.DataTableView.defaults.tableData.name;
-    $.fn.DataTableView.defaults.columnfiltersConfig.tableColumns = datatableColumns;
-    
-    // set the datatableConfig.ajax property
-    $.fn.DataTableView.defaults.datatableConfig.ajax = {
-        'url':$.fn.DataTableView.defaults.columnfiltersConfig.cfWebServiceUrl,
-        'type':'POST',
-        'dataType':'json',
-        'contentType':'application/json',
-        'data':ajaxDataProcess,
-        'processData':false
-    };
+    /* 
+     * set the datatableConfig.ajax property
+     * this ajax object is used for the datatable server-side ajax call
+     */
+    if($.fn.DataTableView.defaults.url) {
+        $.fn.DataTableView.defaults.datatableConfig.serverSide = true;
+        $.fn.DataTableView.defaults.datatableConfig.ajax = {
+            'url':$.fn.DataTableView.defaults.url,
+            'type':'POST',
+            'dataType':'json',
+            'contentType':'application/json',
+            'data':ajaxDataProcess,
+            'processData':false
+        };
+    }
     
     // create and return a DataTableView object 
     return new DataTableView($.fn.DataTableView.defaults);

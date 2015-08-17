@@ -1,14 +1,6 @@
-/**
- * FormNavigation View
- * This Backbone view consists of four buttons: (first, previous, next, and last).
- * @class
- * @classdesc This view is constructed from the parent DataTableView
- * @version 1.0.0
- * @param {object}              options - configuration options for this View instance
- * @param {number}             [options.currentIndex=0] - the current index in the array of items this navigation control is monitoring
- * @param {number}             [options.length=0] - the total number of item in the array of items this navigation control is monitoring
- */
-var FormNavigation = Backbone.View.extend({
+var FormNavigation = Backbone.View.extend(
+/** @lends FormNavigation.prototype */
+{
     'show':function() {
         this.$el.show();
         return this;
@@ -61,7 +53,21 @@ var FormNavigation = Backbone.View.extend({
     
     'className':'datatable-page-form-navigation-group',
     
+    /**
+     * FormNavigation View
+     * This Backbone view consists of four buttons: (first, previous, next, and last).
+     * @typedef {Backbone-View} FormNavigation
+     * @class
+     * @classdesc This view is constructed from the parent DataTableView
+     * @version 1.0.1
+     * @constructs FormNavigation
+     * @extends Backbone-View
+     * @param {object}              options - configuration options for this View instance
+     * @param {number}             [options.currentIndex=0] - the current index in the array of items this navigation control is monitoring
+     * @param {number}             [options.length=0] - the total number of item in the array of items this navigation control is monitoring
+     */
     'initialize':function(options) {
+        this.version = '1.0.1';
         this.model = new Backbone.Model({
             'currentIndex':0, 
             'length':0

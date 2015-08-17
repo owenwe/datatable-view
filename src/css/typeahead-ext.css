@@ -1,12 +1,12 @@
-.input-form-control .tt-query {
+.datatableview .tt-query {
     box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
 }
 
-.input-form-control .tt-hint {
+.datatableview .tt-hint {
     color: #999
 }
 
-.input-form-control .tt-menu {
+.datatableview .tt-menu {
     margin-top: 1px;
     padding: 8px 0;
     background-color: #fff;
@@ -17,20 +17,24 @@
     width:100%;
 }
 
-.input-form-control .tt-dropdown-menu .tt-menu {
+.datatableview .tt-dropdown-menu .tt-menu {
     max-height: 150px;
     overflow-y:auto;
 }
 
-.input-form-control .tt-suggestion {
+.datatableview .tt-suggestion {
     padding: 3px 20px;
     font-size: 18px;
     line-height: 24px;
 }
 
-.input-form-control .tt-suggestion:hover {
+.datatableview .tt-suggestion:hover {
     color: #fff;
     background-color: #0097cf;
     cursor:pointer;
 
+}
+
+.datatableview div.modal-body div.dtview-form-container .tt-dropdown-menu span.twitter-typeahead {
+	width:100%;
 }

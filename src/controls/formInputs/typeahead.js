@@ -1,24 +1,6 @@
-/**
- * Typeahead form control, this will create an instance of TypeaheadFormInput
- * @class
- * @classdesc This Form Input Control is for a typeahead (autocomplet in jQueryUI) input type.
- * @version 1.0.0
- * @param {object}             options                 - configuration options for this View instance
- * @param {string}             options.name            - the value to assign the name attribute on the input
- * @param {string}             options.label           - the display label for the form input
- * @param {object}             options.datasets        - the dataset or datasets to pass to the typeahead constructor
- * @param {object}             [options.inputAttributes={autocomplete:'off', data-provide:'typeahead', class:'form-control typeahead', value:''}] - the attributes for the form input element
- * @param {boolean}            [options.required=false] - if the form input is required or not
- * @param {boolean}            [options.feedback=true]  - if the bootstrap form input should have feedback elements
- * @param {boolean}            [options.disabled=false] - if true then the form control is initially put into a disabled state
- * @param {boolean}            [options.readonly=false] - if true then the form control is initially put into a readonly state, note if the disabled option is set to true then that state will take priority
- * @param {LAYOUT_ORIENTATION} [options.orientation=$.fn.DataTableView.LAYOUT_ORIENTATION.VERTICAL] - the type of layout style for the form input
- * @param {object}             [options.typeaheadConfigOptions={highlight:false, hint:false, minLength:3}] - typeahead configuration object
- * @param {object}             [options.events] - an object with event signatures as keys and the handler function as the value
- * @todo implement a "displayItem" option that would be used instead of the options.datasets.displayKey property
- */
-var TypeaheadFormInput = Backbone.View.extend({
-    
+var TypeaheadFormInput = Backbone.View.extend(
+/** @lends TypeaheadFormInput.prototype */
+{
     /**
      * @member {object} template - used to render this View
      * @private
@@ -27,8 +9,8 @@ var TypeaheadFormInput = Backbone.View.extend({
         '<label for="<%= forminput.name %>" class="control-label text-nowrap col-sm-<% if(forminput.orientation==$.fn.DataTableView.LAYOUT_ORIENTATION.VERTICAL) { %>12 text-left-force<% } else { %>2<% } %>">',
             '<%= forminput.label %>',
         '</label>',
-        '<div class="tt-dropdown-menu form-group input-form-control">',
-            '<div class="row">',
+        '<% if(forminput.orientation==$.fn.DataTableView.LAYOUT_ORIENTATION.HORIZONTAL) { %><div class="col-sm-10"><% } else { %><div class="col-sm-12"><% } %>',
+            '<div class="tt-dropdown-menu form-group input-form-control">',
                 '<div class="input-group">',
                     '<div class="tt-dropdown-menu">',
                         '<input type="text" id="<%= forminput.name %>" />',
@@ -106,9 +88,9 @@ var TypeaheadFormInput = Backbone.View.extend({
     'toggleDisabled':function(enabled) {
         this.model.set('disabled', !enabled);
         if(enabled) {
-            $('input', this.$el).removeAttr('disabled');
+            $('input, button', this.$el).removeAttr('disabled');
         } else {
-            $('input', this.$el).attr('disabled', 'disabled');
+            $('input, button', this.$el).attr('disabled', 'disabled');
         }
     },
     
@@ -121,9 +103,9 @@ var TypeaheadFormInput = Backbone.View.extend({
     'toggleReadonly':function(isReadonly) {
         this.model.set('readonly', isReadonly);
         if(isReadonly) {
-            $('input', this.$el).attr('readonly', 'readonly');
+            $('input, button', this.$el).attr('readonly', 'readonly');
         } else {
-            $('input', this.$el).removeAttr('readonly');
+            $('input, button', this.$el).removeAttr('readonly');
         }
     },
     
@@ -193,18 +175,39 @@ var TypeaheadFormInput = Backbone.View.extend({
         }
     },
     
-    'className':'input-form-control',
+    'className':'form-group input-form-control',
     
-    /** @constructs TypeaheadFormInput */
+    /**
+     * Typeahead form control, this will create an instance of TypeaheadFormInput
+     * @typedef {Backbone-View} TypeaheadFormInput
+     * @class
+     * @classdesc This Form Input Control is for a typeahead (autocomplet in jQueryUI) input type.
+     * @version 1.0.1
+     * @constructs TypeaheadFormInput
+     * @extends Backbone-View
+     * @param {object}             options                 - configuration options for this View instance
+     * @param {string}             options.name            - the value to assign the name attribute on the input
+     * @param {string}             options.label           - the display label for the form input
+     * @param {object}             options.datasets        - the dataset or datasets to pass to the typeahead constructor
+     * @param {string}             [options.extraClass=null] - addition css class to add to this.$el
+     * @param {object}             [options.inputAttributes={autocomplete:'off', data-provide:'typeahead', class:'form-control typeahead', value:''}] - the attributes for the form input element
+     * @param {boolean}            [options.required=false] - if the form input is required or not
+     * @param {boolean}            [options.feedback=true]  - if the bootstrap form input should have feedback elements
+     * @param {boolean}            [options.disabled=false] - if true then the form control is initially put into a disabled state
+     * @param {boolean}            [options.readonly=false] - if true then the form control is initially put into a readonly state, note if the disabled option is set to true then that state will take priority
+     * @param {LAYOUT_ORIENTATION} [options.orientation=$.fn.DataTableView.LAYOUT_ORIENTATION.VERTICAL] - the type of layout style for the form input
+     * @param {object}             [options.typeaheadConfigOptions={highlight:false, hint:false, minLength:3}] - typeahead configuration object
+     * @param {object}             [options.events] - an object with event signatures as keys and the handler function as the value
+     * @todo implement a "displayItem" option that would be used instead of the options.datasets.displayKey property
+     */
     'initialize':function(options) {
-        //console.log(options);
-        
-        this.version = '1.0.0';
+        this.version = '1.0.1';
         
         this.model = new Backbone.Model(
             $.extend(true, {
                 'name':'typeahead-field',
                 'label':'Unknown Typeahead Field',
+                'extraClass':null,
                 'inputAttributes':{'autocomplete':'off', 'data-provide':'typeahead', 'class':'form-control typeahead', 'value':''},
                 'required':false,
                 'feedback':true,
@@ -223,12 +226,18 @@ var TypeaheadFormInput = Backbone.View.extend({
         
         // when the evaluator changes update the reset button based on if an evaluator exists
         this.model.on('change:selectedItem', function(newModel, value, options) {
-            if(value && value.id!==1) {
-                $('button', this.$el).removeAttr('disabled');
-            } else {
-                $('button', this.$el).attr('disabled', 'disabled');
+            if(!this.model.get('disabled') && !this.model.get('readonly')) {
+                if(value && value.id!==1) {
+                    $('button', this.$el).removeAttr('disabled');
+                } else {
+                    $('button', this.$el).attr('disabled', 'disabled');
+                }
             }
         }, this);
+        
+        if(this.model.get('extraClass')) {
+            this.$el.addClass(this.model.get('extraClass'));
+        }
         
         this.render();
     },
@@ -245,9 +254,9 @@ var TypeaheadFormInput = Backbone.View.extend({
             $('input', this.$el).attr({'required':'required'});
         }
         if(this.model.get('disabled')) {
-            $('input', this.$el).attr('disabled', 'disabled');
+            $('input, button', this.$el).attr('disabled', 'disabled');
         } else if(this.model.get('readonly')) {
-            $('input', this.$el).attr({'readonly':'readonly', 'disabled':'disabled'});
+            $('input, button', this.$el).attr({'readonly':'readonly', 'disabled':'disabled'});
         }
         $('input.typeahead', this.$el).typeahead(this.model.get('typeaheadConfigOptions'), this.model.get('datasets'));
         this.model.set('selectedItem', undefined);

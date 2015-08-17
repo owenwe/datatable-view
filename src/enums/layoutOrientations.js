@@ -1,5 +1,5 @@
 /**
- * 
+ * Enum for control layout orientation
  * @readonly
  * @enum {number}
  */

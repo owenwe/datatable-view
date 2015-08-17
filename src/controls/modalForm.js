@@ -1,19 +1,6 @@
-/**
- * ModalForm View
- * This Backbone view contains the form controls, the action panel, and the navigation controls.
- * @class
- * @classdesc This view is constructed from the parent DataTableView
- * @version 1.0.0
- * @param {object}              options - configuration options for this View instance
- * @param {enum}                options.mode - a $.fn.DataTableView.MODES enum value
- * @param {boolean}             [options.showNavigation=true] - if false, then the first/previous/next/last navigation buttons will not display during an edit operation
- * @param {boolean}             [options.showProgressPanel=true] - if false, then the progress panel will not display during ajax actions
- * @param {element|jQuery}      [options.bodyContent=null] - the dom elements to append to the modal body initially
- * @param {object}              [options.modalConfig={backdrop:'static', keyboard:false, show:false}] - the Bootstrap Modal component configuration
- * @param {object}              [options.formAttributes={class:'form-horizontal', accept-charset:'utf-8', role:'form'}] - the attributes for the form in the modal body
- */
-var ModalForm = Backbone.View.extend({
-    
+var ModalForm = Backbone.View.extend(
+/** @lends ModalForm.prototype */
+{
     'template':_.template(template_mfv_view, {'variable':'config'}),
     
     'get':function(key) {
@@ -41,6 +28,14 @@ var ModalForm = Backbone.View.extend({
         return this;
     },
     
+    'getActionType':function() {
+        return this.model.get('actionType');
+    },
+    'setActionType':function(type) {
+        this.model.set('actionType', type);
+        return this;
+    },
+    
     'updateActionButtonTitle':function(label) {
         $('button.dtview-modal-form-action-button', this.$el).html(label);
         return this;
@@ -54,7 +49,7 @@ var ModalForm = Backbone.View.extend({
         return this;
     },
     
-    'toggleActionPanel':function(visible) {
+    'toggleActionPanel':function(visible, label, message) {
         this.model.get('actionPanel').toggle(visible);
         if(visible) {
             this.toggleForm(false);
@@ -67,11 +62,32 @@ var ModalForm = Backbone.View.extend({
                     this.model.get('footerNav').disable();
                 }
             }
-            $('div.modal-footer button.dtview-modal-form-action-button', this.$el).attr('disabled', 'disabled');
+            if(label) {
+                this.model.get('actionPanel').updateLabel(label);
+            } else {
+                this.model.get('actionPanel').updateLabel('');
+            }
+            if(message) {
+                this.model.get('actionPanel').updateMessage(message);
+            } else {
+                this.model.get('actionPanel').updateMessage('');
+            }
+            $('div.modal-footer button.dtview-modal-form-action-button', this.$el).hide();
             $('div.modal-content', this.$el)[0].scrollIntoView({'behavior':'smooth', 'block':'start'});
         }
         return this;
     },
+    
+    'updateActionLabel':function(newLabel) {
+        this.model.get('actionPanel').updateLabel(newLabel);
+        return this;
+    },
+    
+    'updateActionMessage':function(newMessage) {
+        this.model.get('actionPanel').updateMessage(newMessage);
+        return this;
+    },
+    
     
     'toggleForm':function(visible) {
         $('div.dtview-form-container', this.$el).toggle(visible);
@@ -85,7 +101,7 @@ var ModalForm = Backbone.View.extend({
                     this.model.get('footerNav').enable();
                 }
             }
-            $('div.modal-footer button.dtview-modal-form-action-button', this.$el).removeAttr('disabled');
+            $('div.modal-footer button.dtview-modal-form-action-button', this.$el).show();
             this.toggleActionPanel(false);
         }
         return this;
@@ -101,6 +117,7 @@ var ModalForm = Backbone.View.extend({
     
     
     'events':{
+        // when a novigation button is clicked
         'formnav.nav.click':function(e, nav, newIndex) {
             // update all other form navs
             if(nav.cid==this.model.get('headerNav').cid) {
@@ -113,6 +130,7 @@ var ModalForm = Backbone.View.extend({
             this.$el.trigger('modalForm.nav.change', [this, newIndex]);
         },
         
+        // when the form action button is clicked
         'click button.dtview-modal-form-action-button':function(e) {
             // test validation and disable
             this.$el.trigger('modalForm.action.click');
@@ -138,13 +156,33 @@ var ModalForm = Backbone.View.extend({
     
     'className':'modal fade edit-dtview-modal',
     
+    /**
+     * ModalForm View<br />
+     * This Backbone view contains the form controls, the action panel, and the 
+     * navigation controls.
+     * @typedef {Backbone-View} ModalForm
+     * @class
+     * @classdesc This view is constructed from the parent DataTableView
+     * @version 1.0.1
+     * @constructs ModalForm
+     * @extends Backbone-View
+     * @param {object}              options - configuration options for this View instance
+     * @param {enum}                options.mode - a $.fn.DataTableView.MODES enum value
+     * @param {boolean}             [options.showNavigation=true] - if false, then the first/previous/next/last navigation buttons will not display during an edit operation
+     * @param {boolean}             [options.showProgressPanel=true] - if false, then the progress panel will not display during ajax actions
+     * @param {element|jQuery}      [options.bodyContent=null] - the dom elements to append to the modal body initially
+     * @param {object}              [options.modalConfig={backdrop:'static', keyboard:false, show:false}] - the Bootstrap Modal component configuration
+     * @param {object}              [options.formAttributes={class:'form-horizontal', accept-charset:'utf-8', role:'form'}] - the attributes for the form in the modal body
+     */
     'initialize':function(options) {
+        this.version = '1.0.1';
         //console.log(options);
         var privateOptions = {
             'headerNav':new FormNavigation({}),
             'footerNav':new FormNavigation({}),
             'actionPanel':new ActionProgressPanel({}),
-            'visible':false
+            'visible':false,
+            'actionType':$.fn.DataTableView.ACTION_TYPES.NOTHING
         };
         this.model = new Backbone.Model($.extend(true, {
             'showNavigation':true,

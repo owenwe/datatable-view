@@ -23,11 +23,5 @@ $.fn.DataTableView.MODES = {
      * The modify value will cause the edit and remove buttons to be available in the 
      * datatable and the form inputs the be active.
      */ 
-    'MODIFY':5,
-    
-    /**
-     * The datatable-only value hides the columnfilters control and the buttons/links in the 
-     * primary key column that cause the modal form to display.
-     */
-    'DATATABLE_ONLY':7
+    'MODIFY':5
 };

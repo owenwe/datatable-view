@@ -1,12 +1,15 @@
-// plugin defaults
+/**
+ * These are the default values for the DataTableView plugin.
+ * @memberof $.fn.DataTableView
+ */
 $.fn.DataTableView.defaults = {
     // Attributes applied to the container element created during construction.
     'wrapperAttributes':{
-        'class':'data-table-view'
+        'class':'datatableview'
     },
     
     // affects the UI
-    'mode':$.fn.DataTableView.MODES.MODIFY,
+    'mode':$.fn.DataTableView.MODES.READ_ONLY,
     
     // Database to DataTable type map
     'DB_TO_DT_TYPES':{
@@ -30,27 +33,28 @@ $.fn.DataTableView.defaults = {
         'object'    : 'num'
     },
     
-    // Database to ColumnFilters type map
-    'DB_TO_CF_TYPES':{
-        'varchar'   : 'text',
-        'tinytext'  : 'text',
-        'mediumtext': 'text',
-        'text'      : 'text',
-        'longtext'  : 'text',
-        'tinyint'   : 'number',
-        'smallint'  : 'number',
-        'mediumint' : 'number',
-        'int'       : 'number',
-        'bigint'    : 'number',
-        'double'    : 'number',
-        'float'     : 'number',
-        'decimal'   : 'number',
-        'date'      : 'date',
-        'datetime'  : 'date',
-        'timestamp' : 'date',
-        'reference' : 'biglist',
-        'object'    : 'enum'
-    },
+    // this is for the datatable server-side request API
+    'url':null,
+    
+    // this is for the ajax calls that manage the individual objects in the datatable
+    'webServiceUrl':null,
+    
+    /**
+     * The progressBar is a bootstrap component.
+     */
+    'progressBar':null, // TODO this should be its own View
+    
+    /**
+     * The actionProgressPanel is a simple View that displays a progress bar and
+     * message when there is some kind of action being performed.
+     */
+    'actionProgressPanel':null, // TODO this should be its own View
+    
+    /**
+     * anything that $.append() would take as an argument
+     * Displays in the toolbar above the DataTable
+     */
+    'extraUI':null,
     
     // column metadata used to generate column configuration values for datatable and columnfilters
     'tableData':{
@@ -82,39 +86,17 @@ $.fn.DataTableView.defaults = {
         'timestampDates':true
     },
     
-    // this is for the ajax calls that manage the individual objects in the datatable
-    'webServiceUrl':null,//'/wsc/rest',
-    
-    /**
-     * The progressBar is a bootstrap component.
-     */
-    'progressBar':null, // TODO this should be its own View
-    
-    /**
-     * The actionProgressPanel is a simple View that displays a progress bar and
-     * message when there is some kind of action being performed.
-     */
-    'actionProgressPanel':null, // TODO this should be its own View
-    
     /**
      * ColumnFilters configuration
      * @see https://github.com/owenwe/columnfilters
      */
     'columnfiltersConfig':{
-        'cfWebServiceUrl':'/columnfilters', // change this to webServiceUrl
-        'webServiceUrl':null,
-        'mode':0,// will need to create a better enum 
-        'filterCategories':[],
-        'table':null,
-        'columns':[], // set later
-        'defaultColumnOrder':[[1,'asc']]
+        //'url':'',
+        //'mode':$.fn.ColumnFilters.Modes.DEFAULT,
+        //'filters':[],
+        //'filterCategories':[],
+        //'table':null
     },
-    
-    /**
-     * anything that $.append() would take as an argument
-     * Displays in the toolbar above the DataTable
-     */
-    'extraUI':null,
     
     /**
      * DataTables configuration
@@ -139,8 +121,7 @@ $.fn.DataTableView.defaults = {
             '>',
             'tpi<"clearfix">'].join(''),
         'processing':true,
-        'serverSide':true,
-        'ajax':{},
+        'serverSide':false,
         'order':[[1,'asc']],
         'columnDefs':[],
         'columns':[]

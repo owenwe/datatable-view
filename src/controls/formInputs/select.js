@@ -1,23 +1,6 @@
-/**
- * Button group toggle input form control, this will create an instance of SelectFormInput
- * @class
- * @classdesc This form control is for value that belongs to a medium set of options.
- * @version 1.0.0
- * @param {object}             options - configuration options for this View instance
- * @param {string}             options.name - the value to assign the name attribute on the input
- * @param {string}             options.label - the display label for the form input
- * @param {array}              options.options - an array of objects used to populate the button group, each item in the array should have this form: {label: , value: }
- * @param {string}             options.valueKey - a string that will be used in the .set() function to get the named value from the data object
- * @param {boolean}            [options.required=false] - if the form input is required or not
- * @param {object}             [options.inputAttributes={autocomplete:'off'}] - the attributes for the select element
- * @param {boolean}            [options.disabled=false] - if true then the form control is initially put into a disabled state
- * @param {boolean}            [options.readonly=false] - if true then the form control is initially put into a readonly state, note if the disabled option is true, then that takes priority
- * @param {number}             [options.defaultSelected=0] - the index in the options array that should be toggled by default
- * @param {number}             [options.selectSize=6] - A number between 1 and 12 that will appended to the css class as a bootstrap "col-xs-*" class.
- * @param {LAYOUT_ORIENTATION} [options.orientation=$.fn.DataTableView.LAYOUT_ORIENTATION.HORIZONTAL] - the type of layout style for the form input
- * @param {object}             [options.events] - an object with event signatures as keys and the handler function as the value
- */
-var SelectFormInput = Backbone.View.extend({
+var SelectFormInput = Backbone.View.extend(
+/** @lends SelectFormInput.prototype */
+{
     /**
      * @member {object} template - used to render this View
      * @private
@@ -134,20 +117,32 @@ var SelectFormInput = Backbone.View.extend({
         return this;
     },
     
-    /**
-     * 
-     * @member {object} events - event handler functions for this View
-     * 
-     */
-    'events':{},
-    
     'className':'form-group input-form-control',
     
-    /** @constructs SelectFormInput */
+    /**
+     * Button group toggle input form control, this will create an instance of SelectFormInput
+     * @typedef {Backbone-View} SelectFormInput
+     * @class
+     * @classdesc This form control is for value that belongs to a medium set of options.
+     * @version 1.0.1
+     * @constructs SelectFormInput
+     * @extends Backbone-View 
+     * @param {object}             options - configuration options for this View instance
+     * @param {string}             options.name - the value to assign the name attribute on the input
+     * @param {string}             options.label - the display label for the form input
+     * @param {array}              options.options - an array of objects used to populate the button group, each item in the array should have this form: {label: , value: }
+     * @param {string}             options.valueKey - a string that will be used in the .set() function to get the named value from the data object
+     * @param {boolean}            [options.required=false] - if the form input is required or not
+     * @param {object}             [options.inputAttributes={autocomplete:'off'}] - the attributes for the select element
+     * @param {boolean}            [options.disabled=false] - if true then the form control is initially put into a disabled state
+     * @param {boolean}            [options.readonly=false] - if true then the form control is initially put into a readonly state, note if the disabled option is true, then that takes priority
+     * @param {number}             [options.defaultSelected=0] - the index in the options array that should be toggled by default
+     * @param {number}             [options.selectSize=6] - A number between 1 and 12 that will appended to the css class as a bootstrap "col-xs-*" class.
+     * @param {LAYOUT_ORIENTATION} [options.orientation=$.fn.DataTableView.LAYOUT_ORIENTATION.HORIZONTAL] - the type of layout style for the form input
+     * @param {object}             [options.events] - an object with event signatures as keys and the handler function as the value
+     */
     'initialize':function(options) {
-        //console.log(options);
-        
-        this.version = '1.0.0';
+        this.version = '1.0.1';
         
         this.model = new Backbone.Model(
             $.extend(true, {

@@ -1,24 +1,6 @@
-/**
- * Button toggle input form control, this will create an instance of ButtonToggleFormInput
- * @class
- * @classdesc This form control is for boolean-type values.
- * @version 1.0.0
- * @param {object}             options                                                                - configuration options for this View instance
- * @param {string}             options.name                                                           - the value to assign the name attribute on the input
- * @param {string}             options.label                                                          - the display label for the form input
- * @param {object}             [options.inputAttributes={autocomplete:'off'}]                         - the attributes for the text input element
- * @param {string}             [options.trueLabel=Yes]                                                - the label for the true toggle button
- * @param {string}             [options.trueValue=1]                                                  - the value for the true toggle, anything that can be assigned to the "value" attribute
- * @param {string}             [options.falseLabel=No]                                                - the label for the false toggle button
- * @param {string}             [options.falseValue=0]                                                 - the value for the false toggle, anything that can be assigned to the "value" attribute
- * @param {boolean}            [options.defaultToggled=true]                                          - which value (true/false) should be toggled by default
- * @param {boolean}            [options.disabled=false] - if true then the form control is initially put into a disabled state
- * @param {boolean}            [options.readonly=false] - if true then the form control is initially put into a readonly state, note if the disabled option is true, then that takes priority
- * @param {string}             [options.buttonGroupSize]                                              - the bootstrap button group size css class
- * @param {LAYOUT_ORIENTATION} [options.orientation=$.fn.DataTableView.LAYOUT_ORIENTATION.HORIZONTAL] - the type of layout style for the form input
- * @param {object}             [options.events] - an object with event signatures as keys and the handler function as the value
- */
-var ButtonToggleFormInput = Backbone.View.extend({
+var ButtonToggleFormInput = Backbone.View.extend(
+/** @lends ButtonToggleFormInput.prototype */
+{
     /**
      * @member {object} template - used to render this View
      * @private
@@ -149,10 +131,30 @@ var ButtonToggleFormInput = Backbone.View.extend({
     
     'className':'form-group input-form-control',
     
-    /** @constructs ButtonToggleFormInput */
+    /**
+     * Button toggle input form control, this will create an instance of ButtonToggleFormInput
+     * @typedef {Backbone-View} ButtonToggleFormInput
+     * @class
+     * @classdesc This form control is for boolean-type values.
+     * @version 1.0.0
+     * @constructs ButtonToggleFormInput
+     * @extends Backbone-View
+     * @param {object}             options                                                                - configuration options for this View instance
+     * @param {string}             options.name                                                           - the value to assign the name attribute on the input
+     * @param {string}             options.label                                                          - the display label for the form input
+     * @param {object}             [options.inputAttributes={autocomplete:'off'}]                         - the attributes for the text input element
+     * @param {string}             [options.trueLabel=Yes]                                                - the label for the true toggle button
+     * @param {string}             [options.trueValue=1]                                                  - the value for the true toggle, anything that can be assigned to the "value" attribute
+     * @param {string}             [options.falseLabel=No]                                                - the label for the false toggle button
+     * @param {string}             [options.falseValue=0]                                                 - the value for the false toggle, anything that can be assigned to the "value" attribute
+     * @param {boolean}            [options.defaultToggled=true]                                          - which value (true/false) should be toggled by default
+     * @param {boolean}            [options.disabled=false] - if true then the form control is initially put into a disabled state
+     * @param {boolean}            [options.readonly=false] - if true then the form control is initially put into a readonly state, note if the disabled option is true, then that takes priority
+     * @param {string}             [options.buttonGroupSize]                                              - the bootstrap button group size css class
+     * @param {LAYOUT_ORIENTATION} [options.orientation=$.fn.DataTableView.LAYOUT_ORIENTATION.HORIZONTAL] - the type of layout style for the form input
+     * @param {object}             [options.events] - an object with event signatures as keys and the handler function as the value
+     */
     'initialize':function(options) {
-        //console.log(options);
-        
         this.version = '1.0.0';
         
         this.model = new Backbone.Model(

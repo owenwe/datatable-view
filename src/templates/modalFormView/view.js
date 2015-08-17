@@ -1,3 +1,8 @@
+/**
+ * Template string for the Modal Form Navigation control.
+ * @memberof $.fn.DataTableView
+ * @constant {string} template_mfv_view
+ */
 var template_mfv_view = [
     '<div class="modal-dialog modal-<%= config.modalSize %>">',
         '<div class="modal-content">',

@@ -1,15 +1,6 @@
-/**
- * Hidden input form control, this will create an instance of HiddenFormInput
- * @class
- * @classdesc This is the most basic input form control. All Form Input View's will have a .get(), .set(), and .reset()
- * @version 1.0.0
- * @param {object}             options                 - configuration options for this View instance
- * @param {string}             options.name            - the value to assign the name attribute on the input
- * @param {object}             [options.inputAttributes={autocomplete:'off', value:''}] - the attributes for the form input element
- * @param {boolean}            [options.required=false] - if the form input is required or not
- * @param {object}             [options.events] - an object with event signatures as keys and the handler function as the value
- */
-var HiddenFormInput = Backbone.View.extend({
+var HiddenFormInput = Backbone.View.extend(
+/** @lends HiddenFormInput.prototype */
+{
     /**
      * @member {object} template - used to render this View
      * @private
@@ -87,12 +78,25 @@ var HiddenFormInput = Backbone.View.extend({
         this.render();
     },
     
-    /** @constructs HiddenFormInput */
+    /**
+     * Hidden input form control, this will create an instance of HiddenFormInput
+     * @typedef {Backbone-View} HiddenFormInput
+     * @class
+     * @classdesc This is the most basic input form control. All Form Input 
+     * View's will have a .get(), .set(), and .reset()
+     * @version 1.0.1
+     * @constructs HiddenFormInput
+     * @extends Backbone-View
+     * @param {object}             options                 - configuration options for this View instance
+     * @param {string}             options.name            - the value to assign the name attribute on the input
+     * @param {object}             [options.inputAttributes={autocomplete:'off', value:''}] - the attributes for the form input element
+     * @param {boolean}            [options.required=false] - if the form input is required or not
+     * @param {object}             [options.events] - an object with event signatures as keys and the handler function as the value
+     */
     'initialize':function(options) {
+        this.version = '1.0.1';
+        
         //console.log(options);
-        
-        this.version = '1.0.0';
-        
         this.model = new Backbone.Model(
             $.extend(true, {
                 'name':'hidden-field',

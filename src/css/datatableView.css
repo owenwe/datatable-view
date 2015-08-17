@@ -5,8 +5,13 @@
 .dtv-action-column {
     min-width:30px !important;
     max-width:35px;
+    text-align:center;
 }
 
 div.add-button-container button {
 	margin-right:5px !important;
+}
+
+table.dataTable tbody tr td.dataTables_empty {
+    text-align:center!important;
 }

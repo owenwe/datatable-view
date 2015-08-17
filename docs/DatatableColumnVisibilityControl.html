@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Class: DatatableColumnVisibilityControl</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Class: DatatableColumnVisibilityControl</h1>
+
+    
+
+
+
+
+<section>
+
+<header>
+    
+        <h2>
+        DatatableColumnVisibilityControl
+        </h2>
+        
+            <div class="class-description">A UI control to manage a collection on/off properties. In this case a series of visibility booleans from DataTable columns.</div>
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+
+    
+    <h2>Constructor</h2>
+    
+
+    <h4 class="name" id="DatatableColumnVisibilityControl"><span class="type-signature"></span>new DatatableColumnVisibilityControl<span class="signature">(options, groups<span class="signature-attributes">opt</span>, default<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    This View controls the visibility properties of DataTable columns.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>options</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">The configuration options for this View instance.All of the values except for the <em>class</em> property are passed to this view's <code>model<code> constructor.
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>columns</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">This is expected to be an object where each property key is the "data" value in the datatable columns config.The value of each property is expected to have these properties:<br /><ul>    <li><strong>index</strong> - original index of column from datatable columns</li>    <li><strong>data</strong> - the name of the column key</li>    <li><strong>title</strong> - the descriptive label for the column</li>    <li><strong>visible</strong> - a boolean for visibility</li></ul></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>groups</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array.&lt;object></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">An object array where each object has a <em>name</em> and <em>columns</em> properties.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>default</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array.&lt;string></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">An array of column names that are visible by default. It's best to leave this parameter alone.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>options.widthOverride</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">The width of the group of button switches for each of the columns. Increasing this number allows more buttons per horizontal row, saving vertical space.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-version">Version:</dt>
+    <dd class="tag-version"><ul class="dummy"><li>1.0.1</li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="datatable-view.js.html">datatable-view.js</a>, <a href="datatable-view.js.html#line2046">line 2046</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    </div>
+
+    
+        <h3 class="subsection-title">Extends</h3>
+
+        
+
+
+    <ul>
+        <li><a href="global.html#Backbone-View">Backbone-View</a></li>
+    </ul>
+
+
+    
+
+    
+
+    
+
+     
+
+    
+
+    
+
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="ActionProgressPanel.html">ActionProgressPanel</a></li><li><a href="ButtonGroupToggleFormInput.html">ButtonGroupToggleFormInput</a></li><li><a href="ButtonToggleFormInput.html">ButtonToggleFormInput</a></li><li><a href="DatatableColumnVisibilityControl.html">DatatableColumnVisibilityControl</a></li><li><a href="DataTableView.html">DataTableView</a></li><li><a href="DatepickerFormInput.html">DatepickerFormInput</a></li><li><a href="FormNavigation.html">FormNavigation</a></li><li><a href="HiddenFormInput.html">HiddenFormInput</a></li><li><a href="ModalForm.html">ModalForm</a></li><li><a href="NumberFormInput.html">NumberFormInput</a></li><li><a href="SelectFormInput.html">SelectFormInput</a></li><li><a href="TextFormInput.html">TextFormInput</a></li><li><a href="TypeaheadFormInput.html">TypeaheadFormInput</a></li></ul><h3>Namespaces</h3><ul><li><a href="$.fn.DataTableView.html">DataTableView</a></li></ul><h3>Global</h3><ul><li><a href="global.html#events">events</a></li><li><a href="global.html#get">get</a></li><li><a href="global.html#name">name</a></li><li><a href="global.html#reset">reset</a></li><li><a href="global.html#set">set</a></li><li><a href="global.html#timestampCellRender">timestampCellRender</a></li><li><a href="global.html#toggleDisabled">toggleDisabled</a></li><li><a href="global.html#toggleReadonly">toggleReadonly</a></li><li><a href="global.html#type">type</a></li><li><a href="global.html#validate">validate</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.2</a> on Mon Aug 17 2015 10:37:27 GMT-0700 (Pacific Daylight Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

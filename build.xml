@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <project name="datatable-view" default="help" basedir=".">
 	<description>
-		Compile and deploy ant script for the PIP web application.
+		Compile and deploy ant script for the DataTableView jQuery plugin.
 	</description>
 	
 	<condition property="is-windows">
@@ -9,6 +9,12 @@
     </condition>
 	
 	<property name="yui" value="yuicompressor-2.4.8.jar" />
+	<property name="source.dir" value="dist" />
+	
+	
+	<target name="dist" depends="compile" description="combines the source files into a single .js/.css source file, minifies them, and generates the documentation files">
+	    <antcall target="doc" />
+	</target>
 	
 	<!-- minify js and css files -->
 	<target name="compile" depends="combine" description="minify .js and .css files">
@@ -46,6 +52,7 @@
 				<!-- functions -->
 				<file name="functions/primaryKeyColumnRenderModify.js" />
 				<file name="functions/primaryKeyColumnRenderReadonly.js" />
+				<file name="functions/primaryKeyColumnRenderModifyOnly.js" />
 				<file name="functions/ajaxProcessData.js" />
 				
 				<!-- classes/objects -->
@@ -66,6 +73,7 @@
 				<!-- enums -->
                 <file name="enums/modes.js" />
                 <file name="enums/layoutOrientations.js" />
+				<file name="enums/formActionTypes.js" />
 				
 				<!-- public plugin functions -->
 				<file name="functions/public/timestampCellRender.js" />
@@ -78,6 +86,22 @@
 			
 		</concat>
 	</target>
+	
+	<target name="doc" description="generates the documentation">
+        <delete includeemptydirs="true">
+            <fileset dir="docs" includes="**/*" />
+        </delete>
+        <exec dir="${basedir}" osfamily="windows" executable="cmd">
+            <arg line="/c" />
+            <arg line="jsdoc" />
+        	<arg line="${source.dir}" />
+        	<arg line="-c conf.json" />
+        </exec>
+        <exec dir="${basedir}" osfamily="unix" executable="jsdoc">
+            <arg line="${source.dir}" />
+        	<arg line="-c conf.json" />
+        </exec>
+    </target>
 	
 	<!-- Help Target -->
     <target name="help">

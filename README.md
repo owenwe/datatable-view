@@ -1,4 +1,4 @@
-# datatable-view
+# DataTableView
 A jQuery plugin that merges DataTables with ColumnFilters into a single view.
 
 ## Requirements
@@ -12,11 +12,12 @@ dataTables.bootstrap | 1.10.4 | Both js and css files.
 jquery.dataTables | 1.10.4 | 
 bootstrap.datepicker | 1.4.0 | 
 Moment.js | 2.9.0 | 
-Fuelux | 3.0.2 | You only need the spinbox.js file, not the entire library. However, you will need the fuelux.min.css
+Fuelux | 3.0.2 | Only spinbox.js is needed. However, you will need the fuelux.min.css
 Typeahead | 0.10.5 | The typeahead bundle will include all the resources for Typeahead that are needed.
 
-## Install
-
-
 ## Usage
+`$('div#cf-container').DataTableView({options...});`
 
+or
+
+`$.fn.DataTableView({options...});`

@@ -1,9 +1,14 @@
+/**
+ * The template string for the Column Visibility Group without groups
+ * @memberof $.fn.DataTableView
+ * @constant {string} template_cvc_noGroups
+ */
 var template_cvc_noGroups = [
      '<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">',
          '<span class="glyphicon glyphicon-eye-close" aria-hidden="true"></span> <span class="caret"></span>',
      '</button>',
      '<ul class="dropdown-menu list-unstyled text-nowrap col-vis-menu" role="menu">',
-         '<li<% if(_.has(config,"widthOverride")) { %> style="width:<%= config.widthOverride %>" <% } %>>',
+         '<li<% if(_.has(config,"widthOverride")) { %> style="width:<%= config.widthOverride %>px" <% } %>>',
              '<h3><u>Column Visibility</u></h3>',
              '<ul class="list-inline list-unstyled">',
              '<% for(var i in config.sorted) { %>',

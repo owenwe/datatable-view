@@ -1,21 +1,6 @@
-/**
- * Number input form control, this will create an instance of NumberFormInput
- * @class
- * @classdesc This form control is for a number type value
- * @version 1.0.0
- * @param {object}             options - configuration options for this View instance
- * @param {string}             options.name - the value to assign the name attribute on the input
- * @param {string}             options.label - the display label for the form input
- * @param {object}             [options.inputAttributes={autocomplete:'off', class:'form-control input-mini spinbox-input'}] - the attributes for the form input element
- * @param {boolean}            [options.required=false] - if the form input is required or not
- * @param {boolean}            [options.feedback=true]  - if the bootstrap form input should have feedback elements
- * @param {boolean}            [options.disabled=false] - if true then the form control is initially put into a disabled state
- * @param {boolean}            [options.readonly=false] - if true then the form control is initially put into a readonly state, note if the disabled option is true, then that takes priority
- * @param {LAYOUT_ORIENTATION} [options.orientation=$.fn.DataTableView.LAYOUT_ORIENTATION.HORIZONTAL] - the type of layout style for the form input
- * @param {object}             [options.spinboxConfig] - the configuration options for the spinbox control
- * @param {object}             [options.events] - an object with event signatures as keys and the handler function as the value
- */
-var NumberFormInput = Backbone.View.extend({
+var NumberFormInput = Backbone.View.extend(
+/** @lends NumberFormInput.prototype */
+{
     /**
      * @member {object} template - used to render this View
      * @private
@@ -67,7 +52,7 @@ var NumberFormInput = Backbone.View.extend({
      * @return {object} - return value will be an object
      */
     'get':function() {
-        var returnValue = {}, n = $(['spinbox-formcontrol-',this.model.get('name')].join(''), this.$el).spinbox('value');
+        var returnValue = {}, n = $('div.spinbox', this.$el).spinbox('value');
         returnValue[this.model.get('name')] = _.isFinite(n) ? n*1 : undefined;
         return returnValue;
     },
@@ -79,7 +64,9 @@ var NumberFormInput = Backbone.View.extend({
      * @param {object} - data from the datatable row for this data field
      */
     'set':function(data) {
-        $(['spinbox-formcontrol-',this.model.get('name')].join(''), this.$el).spinbox(data);
+        if(_.isFinite(data)) {
+            $('div.spinbox', this.$el).spinbox('value', data);
+        }
     },
     
     /**
@@ -91,9 +78,9 @@ var NumberFormInput = Backbone.View.extend({
     'toggleDisabled':function(enabled) {
         this.model.set('disabled', !enabled);
         if(enabled) {
-            $('input', this.$el).removeAttr('disabled');
+            $('div.spinbox', this.$el).spinbox('enable');
         } else {
-            $('input', this.$el).attr('disabled', 'disabled');
+            $('div.spinbox', this.$el).spinbox('disable');
         }
     },
     
@@ -106,9 +93,9 @@ var NumberFormInput = Backbone.View.extend({
     'toggleReadonly':function(isReadonly) {
         this.model.set('readonly', isReadonly);
         if(isReadonly) {
-            $('input', this.$el).attr('readonly', 'readonly');
+            $('div.spinbox', this.$el).spinbox('disable');
         } else {
-            $('input', this.$el).removeAttr('readonly');
+            $('div.spinbox', this.$el).spinbox('enable');
         }
     },
     
@@ -124,7 +111,7 @@ var NumberFormInput = Backbone.View.extend({
     'validate':function() {
         this.$el.removeClass('has-success has-error');
         
-        var n = $(['spinbox-formcontrol-',this.model.get('name')].join(''), this.$el).spinbox('value');
+        var n = $('div.spinbox', this.$el).spinbox('value');
         if(this.model.get('required')) {
             if(_.isFinite(n)) {
                 if(this.model.get('feedback')) {
@@ -155,21 +142,32 @@ var NumberFormInput = Backbone.View.extend({
         return this;
     },
     
-    /**
-     * 
-     * @member {object} events - event handler functions for this View
-     * 
-     */
-    'events':{},
-    
     'className':'form-group input-form-control fuelux',
     
-    /** @constructs NumberFormInput */
+    /**
+     * Number input form control, this will create an instance of NumberFormInput
+     * @typedef {Backbone-View} NumberFormInput
+     * @class
+     * @classdesc This form control is for a number type value
+     * @version 1.0.5
+     * @constructs NumberFormInput
+     * @extends Backbone-View
+     * @param {object}             options - configuration options for this View instance
+     * @param {string}             options.name - the value to assign the name attribute on the input
+     * @param {string}             options.label - the display label for the form input
+     * @param {object}             [options.inputAttributes={autocomplete:'off', class:'form-control input-mini spinbox-input'}] - the attributes for the form input element
+     * @param {boolean}            [options.required=false] - if the form input is required or not
+     * @param {boolean}            [options.feedback=true]  - if the bootstrap form input should have feedback elements
+     * @param {boolean}            [options.disabled=false] - if true then the form control is initially put into a disabled state
+     * @param {boolean}            [options.readonly=false] - if true then the form control is initially put into a readonly state, note if the disabled option is true, then that takes priority
+     * @param {LAYOUT_ORIENTATION} [options.orientation=$.fn.DataTableView.LAYOUT_ORIENTATION.HORIZONTAL] - the type of layout style for the form input
+     * @param {object}             [options.spinboxConfig] - the configuration options for the spinbox control
+     * @param {object}             [options.events] - an object with event signatures as keys and the handler function as the value
+     */
     'initialize':function(options) {
+        this.version = '1.0.5';
+        
         //console.log(options);
-        
-        this.version = '1.0.0';
-        
         this.model = new Backbone.Model(
             $.extend(true, {
                 'name':'number-field',
@@ -209,9 +207,9 @@ var NumberFormInput = Backbone.View.extend({
             $('input', this.$el).attr({'required':'required'});
         }
         if(this.model.get('disabled')) {
-            $('input', this.$el).attr('disabled', 'disabled');
+            $('div.spinbox', this.$el).spinbox('disable');
         } else if(this.model.get('readonly')) {
-            $('input', this.$el).attr({'readonly':'readonly', 'disabled':'disabled'});
+            $('div.spinbox', this.$el).spinbox('disable');
         }
         $(['spinbox-formcontrol-',this.model.get('name')].join(''), this.$el).spinbox(this.model.get('spinboxConfig'));
         return this.$el;
