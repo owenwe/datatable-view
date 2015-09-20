@@ -28,7 +28,7 @@
         <article>
             <pre class="prettyprint source linenums"><code>/**
  * DataTableView jQuery plugin
- * @version 1.0.1
+ * @version 1.0.2
  * @author Wes Owen wowen@ccctechcenter.org
  */
 (function($){
@@ -845,6 +845,8 @@ var ButtonGroupToggleFormInput = Backbone.View.extend(
 /** @lends ButtonGroupToggleFormInput.prototype */
 {
     /**
+     * The forminput template variable will have a "buttons" property that's an 
+     * array of objects; each with a "label" and "value" property.
      * @member {object} template - used to render this View
      * @private
      */
@@ -886,14 +888,18 @@ var ButtonGroupToggleFormInput = Backbone.View.extend(
     },
     
     /**
-     * Returns the value of the form input in the form of an object.
+     * Returns the value of the form input.
      * @pulic
      * @function get
      * @return {object} - return value will be an object
      */
     'get':function() {
         var returnValue = {};
-        returnValue[this.model.get('name')] = $('label.active input', this.$el).val();
+        if(this.model.get('valueOnly')) {
+            returnValue = $('label.active input', this.$el).val();
+        } else {
+            returnValue[this.model.get('name')] = $('label.active input', this.$el).val();
+        }
         return returnValue;
     },
     
@@ -980,8 +986,8 @@ var ButtonGroupToggleFormInput = Backbone.View.extend(
      * Button group toggle input form control, this will create an instance of ButtonGroupToggleFormInput
      * @typedef {Backbone-View} ButtonGroupToggleFormInput
      * @class
-     * @classdesc This form control is for a value that belong to a small set of options.
-     * @version 1.0.1
+     * @classdesc This form control is for a value that belongs to a small set of options.
+     * @version 1.0.3
      * @constructs ButtonGroupToggleFormInput
      * @extends Backbone-View 
      * @param {object}             options - configuration options for this View instance
@@ -989,6 +995,7 @@ var ButtonGroupToggleFormInput = Backbone.View.extend(
      * @param {string}             options.label - the display label for the form input
      * @param {array}              options.buttons - an array of objects used to populate the button group, each item in the array should have this form: {label: , value: }
      * @param {string}             options.valueKey - a string that will be used in the .set() function to get the named value from the data object
+     * @param {boolean}            [options.valueOnly=false] - when true then .get() will only return the value and not the datasource object
      * @param {object}             [options.inputAttributes={autocomplete:'off'}] - the attributes for the input elements
      * @param {number}             [options.defaultToggled=0] - the index in the buttons array that should be toggled by default
      * @param {boolean}            [options.disabled=false] - if true then the form control is initially put into a disabled state
@@ -998,7 +1005,7 @@ var ButtonGroupToggleFormInput = Backbone.View.extend(
      * @param {object}             [options.events] - an object with event signatures as keys and the handler function as the value
      */
     'initialize':function(options) {
-        this.version = '1.0.1';
+        this.version = '1.0.3';
         
         this.model = new Backbone.Model(
             $.extend(true, {
@@ -2531,19 +2538,30 @@ var DataTableView = Backbone.View.extend(
             for(i in this.get('formInputs')) {
                 if(_.indexOf(['select','buttonGroup'], 
                         this.get('formInputs')[i].type())>-1) {
+                    var isBtnGrpValOnly = this.get('formInputs')[i].type()==='buttonGroup' &amp;&amp; 
+                        this.get('formInputs')[i].model.get('valueOnly');
                     formObjConfig = _.findWhere(this.get('tableData').columns, 
                         {'data':this.get('formInputs')[i].name()});
-                    keyValue = _.isFinite(
-                        formObjConfig.datasource[0][formObjConfig.valueKey]) ? 
-                            this.get('formInputs')[i].validate()[formObjConfig.data]*1 : 
-                            this.get('formInputs')[i].validate()[formObjConfig.data];
+                    
+                    if(isBtnGrpValOnly) {
+                        keyValue = this.get('formInputs')[i].validate();
+                    } else {
+                        // check if the value is going to be a number or not
+                        // if it is, then ensure value as a number
+                        keyValue = _.isFinite(
+                            formObjConfig.datasource[0][formObjConfig.valueKey]) ? 
+                                this.get('formInputs')[i].validate()[formObjConfig.data]*1 : 
+                                this.get('formInputs')[i].validate()[formObjConfig.data];
+                    }
+                    
                     var searchObj = {};
                     searchObj[formObjConfig.valueKey] = keyValue;
+                    // check if the value object exists in the datasource
                     dataObj = _.findWhere(formObjConfig.datasource, searchObj)
                     if(dataObj) {
                         $.extend(formObj, _.createKeyValueObject(
                             this.get('formInputs')[i].name(),
-                            dataObj
+                            isBtnGrpValOnly ? keyValue : dataObj
                         ));
                     }
                 } else {
@@ -2927,13 +2945,13 @@ var DataTableView = Backbone.View.extend(
      * @typedef {Backbone-View} DataTableView
      * @class
      * @classdesc This view renders and controls the DataTableView jQuery plugin.
-     * @version 1.0.1
+     * @version 1.0.2
      * @constructs DataTableView
      * @extends Backbone-View
      * @param {object} options - configuration options for the View
      */
     'initialize':function(options) {
-        this.version = '1.0.1';
+        this.version = '1.0.2';
         // ASSERTION: the datatableConfig.ajax configuration value must an 
         // object so that the context property can be added
         if(options.url) {
@@ -3153,36 +3171,40 @@ $.fn.DataTableView = function(config) {
      */
     displayTableColumns = _.without(config.tableData.columns, primaryKeyColumn);
     
+    // process columns for columnfilters
     columnfiltersColumns = _.map(
         _.reject(displayTableColumns, function(c) { 
             return _.has(c, 'cfexclude')
         }), function(c) {
-        var r = {'data':c.data, 'title':c.title};
-        if(_.has(c, 'cftype')) {
-            _.extend(r, {'type':c.cftype});
-        } else {
-            _.extend(r, {'type':c.type});
-        }
-        if(_.has(c, 'table')) {
-            _.extend(r, {'table':c.table});
-        }
-        if(_.has(c, 'datasource')) {
-            _.extend(r, {
-                'datasource':c.datasource,
-                'displayKey':c.displayKey,
-                'valueKey':c.valueKey
-            });
-        }
-        
-        // any special types
-        if(_.contains(cfSpecialTypes, r.type)) {
-            $.extend(r, _.omit(c.control, 
-                ['type','table','datasource','displayKey','valueKey']
-            ));
-        }
-        return r;
-    }, this);
+            var r = {'data':c.data, 'title':c.title};
+            if(_.has(c, 'cftype')) {
+                _.extend(r, {'type':c.cftype});
+            } else {
+                _.extend(r, {'type':c.type});
+            }
+            if(_.has(c, 'table')) {
+                _.extend(r, {'table':c.table});
+            }
+            if(_.has(c, 'datasource')) {
+                _.extend(r, {
+                    'datasource':c.datasource,
+                    'displayKey':c.displayKey,
+                    'valueKey':c.valueKey
+                });
+            }
+            
+            // any special types
+            if(_.contains(cfSpecialTypes, r.type)) {
+                $.extend(r, _.omit(c.control, 
+                    ['type','table','datasource','displayKey','valueKey']
+                ));
+            }
+            return r;
+        }, 
+        this
+    );
     
+    // process columns for datatable view
     for(i in displayTableColumns) {
         var col = displayTableColumns[i], 
             metaCol = {
@@ -3263,7 +3285,7 @@ $.fn.DataTableView = function(config) {
             // readonly has priority over disabled
             if(isReadonly) {
                 inpt.readonly = true;
-            } else if(_.has(col, 'readonly') &amp;&amp; _.isBoolean(col.readonly)){
+            } else if(_.has(col, 'readonly') &amp;&amp; _.isBoolean(col.readonly)) {
                 inpt.readonly = col.readonly;
             } else if(_.has(col, 'disabled') &amp;&amp; _.isBoolean(col.disabled)) {
                 inpt.disabled = col.disabled;
@@ -3584,7 +3606,7 @@ $.fn.DataTableView.defaults = {
 };
 
     
-    $.fn.DataTableView.VERSION = '1.0.1';
+    $.fn.DataTableView.VERSION = '1.0.2';
 })(jQuery);
 </code></pre>
         </article>
@@ -3602,7 +3624,7 @@ $.fn.DataTableView.defaults = {
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.2</a> on Mon Aug 17 2015 10:37:26 GMT-0700 (Pacific Daylight Time)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.2</a> on Sat Sep 19 2015 12:45:02 GMT-0700 (Pacific Daylight Time)
 </footer>
 
 <script> prettyPrint(); </script>
