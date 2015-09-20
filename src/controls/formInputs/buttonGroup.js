@@ -2,6 +2,8 @@ var ButtonGroupToggleFormInput = Backbone.View.extend(
 /** @lends ButtonGroupToggleFormInput.prototype */
 {
     /**
+     * The forminput template variable will have a "buttons" property that's an 
+     * array of objects; each with a "label" and "value" property.
      * @member {object} template - used to render this View
      * @private
      */
@@ -43,14 +45,18 @@ var ButtonGroupToggleFormInput = Backbone.View.extend(
     },
     
     /**
-     * Returns the value of the form input in the form of an object.
+     * Returns the value of the form input.
      * @pulic
      * @function get
      * @return {object} - return value will be an object
      */
     'get':function() {
         var returnValue = {};
-        returnValue[this.model.get('name')] = $('label.active input', this.$el).val();
+        if(this.model.get('valueOnly')) {
+            returnValue = $('label.active input', this.$el).val();
+        } else {
+            returnValue[this.model.get('name')] = $('label.active input', this.$el).val();
+        }
         return returnValue;
     },
     
@@ -137,8 +143,8 @@ var ButtonGroupToggleFormInput = Backbone.View.extend(
      * Button group toggle input form control, this will create an instance of ButtonGroupToggleFormInput
      * @typedef {Backbone-View} ButtonGroupToggleFormInput
      * @class
-     * @classdesc This form control is for a value that belong to a small set of options.
-     * @version 1.0.1
+     * @classdesc This form control is for a value that belongs to a small set of options.
+     * @version 1.0.3
      * @constructs ButtonGroupToggleFormInput
      * @extends Backbone-View 
      * @param {object}             options - configuration options for this View instance
@@ -146,6 +152,7 @@ var ButtonGroupToggleFormInput = Backbone.View.extend(
      * @param {string}             options.label - the display label for the form input
      * @param {array}              options.buttons - an array of objects used to populate the button group, each item in the array should have this form: {label: , value: }
      * @param {string}             options.valueKey - a string that will be used in the .set() function to get the named value from the data object
+     * @param {boolean}            [options.valueOnly=false] - when true then .get() will only return the value and not the datasource object
      * @param {object}             [options.inputAttributes={autocomplete:'off'}] - the attributes for the input elements
      * @param {number}             [options.defaultToggled=0] - the index in the buttons array that should be toggled by default
      * @param {boolean}            [options.disabled=false] - if true then the form control is initially put into a disabled state
@@ -155,7 +162,7 @@ var ButtonGroupToggleFormInput = Backbone.View.extend(
      * @param {object}             [options.events] - an object with event signatures as keys and the handler function as the value
      */
     'initialize':function(options) {
-        this.version = '1.0.1';
+        this.version = '1.0.3';
         
         this.model = new Backbone.Model(
             $.extend(true, {

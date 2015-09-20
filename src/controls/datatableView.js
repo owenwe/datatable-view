@@ -60,19 +60,30 @@ var DataTableView = Backbone.View.extend(
             for(i in this.get('formInputs')) {
                 if(_.indexOf(['select','buttonGroup'], 
                         this.get('formInputs')[i].type())>-1) {
+                    var isBtnGrpValOnly = this.get('formInputs')[i].type()==='buttonGroup' && 
+                        this.get('formInputs')[i].model.get('valueOnly');
                     formObjConfig = _.findWhere(this.get('tableData').columns, 
                         {'data':this.get('formInputs')[i].name()});
-                    keyValue = _.isFinite(
-                        formObjConfig.datasource[0][formObjConfig.valueKey]) ? 
-                            this.get('formInputs')[i].validate()[formObjConfig.data]*1 : 
-                            this.get('formInputs')[i].validate()[formObjConfig.data];
+                    
+                    if(isBtnGrpValOnly) {
+                        keyValue = this.get('formInputs')[i].validate();
+                    } else {
+                        // check if the value is going to be a number or not
+                        // if it is, then ensure value as a number
+                        keyValue = _.isFinite(
+                            formObjConfig.datasource[0][formObjConfig.valueKey]) ? 
+                                this.get('formInputs')[i].validate()[formObjConfig.data]*1 : 
+                                this.get('formInputs')[i].validate()[formObjConfig.data];
+                    }
+                    
                     var searchObj = {};
                     searchObj[formObjConfig.valueKey] = keyValue;
+                    // check if the value object exists in the datasource
                     dataObj = _.findWhere(formObjConfig.datasource, searchObj)
                     if(dataObj) {
                         $.extend(formObj, _.createKeyValueObject(
                             this.get('formInputs')[i].name(),
-                            dataObj
+                            isBtnGrpValOnly ? keyValue : dataObj
                         ));
                     }
                 } else {
@@ -456,13 +467,13 @@ var DataTableView = Backbone.View.extend(
      * @typedef {Backbone-View} DataTableView
      * @class
      * @classdesc This view renders and controls the DataTableView jQuery plugin.
-     * @version 1.0.1
+     * @version 1.0.2
      * @constructs DataTableView
      * @extends Backbone-View
      * @param {object} options - configuration options for the View
      */
     'initialize':function(options) {
-        this.version = '1.0.1';
+        this.version = '1.0.2';
         // ASSERTION: the datatableConfig.ajax configuration value must an 
         // object so that the context property can be added
         if(options.url) {
@@ -682,36 +693,40 @@ $.fn.DataTableView = function(config) {
      */
     displayTableColumns = _.without(config.tableData.columns, primaryKeyColumn);
     
+    // process columns for columnfilters
     columnfiltersColumns = _.map(
         _.reject(displayTableColumns, function(c) { 
             return _.has(c, 'cfexclude')
         }), function(c) {
-        var r = {'data':c.data, 'title':c.title};
-        if(_.has(c, 'cftype')) {
-            _.extend(r, {'type':c.cftype});
-        } else {
-            _.extend(r, {'type':c.type});
-        }
-        if(_.has(c, 'table')) {
-            _.extend(r, {'table':c.table});
-        }
-        if(_.has(c, 'datasource')) {
-            _.extend(r, {
-                'datasource':c.datasource,
-                'displayKey':c.displayKey,
-                'valueKey':c.valueKey
-            });
-        }
-        
-        // any special types
-        if(_.contains(cfSpecialTypes, r.type)) {
-            $.extend(r, _.omit(c.control, 
-                ['type','table','datasource','displayKey','valueKey']
-            ));
-        }
-        return r;
-    }, this);
+            var r = {'data':c.data, 'title':c.title};
+            if(_.has(c, 'cftype')) {
+                _.extend(r, {'type':c.cftype});
+            } else {
+                _.extend(r, {'type':c.type});
+            }
+            if(_.has(c, 'table')) {
+                _.extend(r, {'table':c.table});
+            }
+            if(_.has(c, 'datasource')) {
+                _.extend(r, {
+                    'datasource':c.datasource,
+                    'displayKey':c.displayKey,
+                    'valueKey':c.valueKey
+                });
+            }
+            
+            // any special types
+            if(_.contains(cfSpecialTypes, r.type)) {
+                $.extend(r, _.omit(c.control, 
+                    ['type','table','datasource','displayKey','valueKey']
+                ));
+            }
+            return r;
+        }, 
+        this
+    );
     
+    // process columns for datatable view
     for(i in displayTableColumns) {
         var col = displayTableColumns[i], 
             metaCol = {
@@ -792,7 +807,7 @@ $.fn.DataTableView = function(config) {
             // readonly has priority over disabled
             if(isReadonly) {
                 inpt.readonly = true;
-            } else if(_.has(col, 'readonly') && _.isBoolean(col.readonly)){
+            } else if(_.has(col, 'readonly') && _.isBoolean(col.readonly)) {
                 inpt.readonly = col.readonly;
             } else if(_.has(col, 'disabled') && _.isBoolean(col.disabled)) {
                 inpt.disabled = col.disabled;
