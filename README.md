@@ -21,3 +21,11 @@ Typeahead | 0.10.5 | The typeahead bundle will include all the resources for Typ
 or
 
 `$.fn.DataTableView({options...});`
+
+### Running Demo with Docker
+Docker can make your life easier as a developer. Instead of opening the demo files in a browser from the local file system, you can run an Apache container and mount the project folder into a directory in htdocs. Furthermore, you can do this for more than one project.<br />
+Debugging web apps when ran from the local file system can sometimes be troublesome and you usually don't want to be locked into one web server installed on your development OS.
+
+```
+docker run -d --name webdev -v ~/projects/workspace/datatable-view/:/usr/local/apache2/htdocs/dtv/ -v ~/projects/workspace/columnfilters/:/usr/local/apache2/htdocs/cf/ httpd:2.4
+```

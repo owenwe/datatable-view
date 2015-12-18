@@ -10,6 +10,6 @@
  * @return {string} A formatted date string representing the timestamp.
  */
 $.fn.DataTableView.timestampCellRender = function(data, type, full, meta) {
-    return _.isFinite(data) ? new Date(data).toLocaleDateString() : '';
+    return _.isFinite(data) ? moment.utc(data).format('MM/D/YYYY') : '';
 };
 

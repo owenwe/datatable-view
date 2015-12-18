@@ -46,7 +46,14 @@ var ButtonGroupToggleFormInput = Backbone.View.extend(
     
     /**
      * Returns the value of the form input.
-     * @pulic
+     * This is where the valueOnly property in the data configuration comes into 
+     * play. When true, the value returned from .get() is only the value from the
+     * input control. e.g. f.get() would return 1, or 'foo'. Where when valueOnly 
+     * is false, or doesn't exists (default), the value returned from .get() is
+     * an object with the data configuration name property as the key and the 
+     * input control value as the value, e.g. f.get() = {"foo":1}
+     * 
+     * @public
      * @function get
      * @return {object} - return value will be an object
      */

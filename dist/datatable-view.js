@@ -1,6 +1,6 @@
 /**
  * DataTableView jQuery plugin
- * @version 1.0.2
+ * @version 1.0.3
  * @author Wes Owen wowen@ccctechcenter.org
  */
 (function($){
@@ -54,7 +54,6 @@ var template_app_view = [
 '<div class="panel-body text-danger"><%= config.errorMessage %></div>'
 ].join('');
 
-
 /**
  * Template string for the Form Navigation control.
  * @memberof $.fn.DataTableView
@@ -76,7 +75,6 @@ var template_fnv_view = [
         '</button>',
     '</div>'
 ].join('');
-
 
 /**
  * Template string for the Modal Form Navigation control.
@@ -102,7 +100,6 @@ var template_mfv_view = [
         '</div>',
     '</div>'
 ].join('');
-
 
 /**
  * The template string for the Column Visibility Control with groups.
@@ -178,7 +175,6 @@ var template_cvc_noGroups = [
 var template_dtv_view = [
     '<table class="table table-condensed table-striped table-bordered dtview-datatable" width="100%"></table>'
 ].join('');
-
 /**
  * A render function for a primary key column in a datatable. This function 
  * would render modify and delete buttons.
@@ -219,7 +215,6 @@ var primaryKeyColumnReadonlyRender = function(data, type, full, meta) {
     ].join('');
 };
 
-
 /**
  * A render function for a primary key column in a datatable. This function 
  * would only render a modify button.
@@ -259,7 +254,6 @@ var ajaxDataProcess = function(d, datatable) {
     }
     return JSON.stringify(d);
 };
-
 var HiddenFormInput = Backbone.View.extend(
 /** @lends HiddenFormInput.prototype */
 {
@@ -383,7 +377,6 @@ var HiddenFormInput = Backbone.View.extend(
         return this.$el;
     }
 });
-
 var TextFormInput = Backbone.View.extend(
 /** @lends TextFormInput.prototype */{
     /**
@@ -613,7 +606,6 @@ var TextFormInput = Backbone.View.extend(
         return this.$el;
     }
 });
-
 var ButtonToggleFormInput = Backbone.View.extend(
 /** @lends ButtonToggleFormInput.prototype */
 {
@@ -812,7 +804,6 @@ var ButtonToggleFormInput = Backbone.View.extend(
         return this.$el;
     }
 });
-
 var ButtonGroupToggleFormInput = Backbone.View.extend(
 /** @lends ButtonGroupToggleFormInput.prototype */
 {
@@ -861,7 +852,14 @@ var ButtonGroupToggleFormInput = Backbone.View.extend(
     
     /**
      * Returns the value of the form input.
-     * @pulic
+     * This is where the valueOnly property in the data configuration comes into 
+     * play. When true, the value returned from .get() is only the value from the
+     * input control. e.g. f.get() would return 1, or 'foo'. Where when valueOnly 
+     * is false, or doesn't exists (default), the value returned from .get() is
+     * an object with the data configuration name property as the key and the 
+     * input control value as the value, e.g. f.get() = {"foo":1}
+     * 
+     * @public
      * @function get
      * @return {object} - return value will be an object
      */
@@ -1016,7 +1014,6 @@ var ButtonGroupToggleFormInput = Backbone.View.extend(
         return this.$el;
     }
 });
-
 var SelectFormInput = Backbone.View.extend(
 /** @lends SelectFormInput.prototype */
 {
@@ -1205,7 +1202,6 @@ var SelectFormInput = Backbone.View.extend(
         return this.$el;
     }
 });
-
 var NumberFormInput = Backbone.View.extend(
 /** @lends NumberFormInput.prototype */
 {
@@ -1423,7 +1419,6 @@ var NumberFormInput = Backbone.View.extend(
         return this.$el;
     }
 });
-
 var DatepickerFormInput = Backbone.View.extend(
 /** @lends DatepickerFormInput.prototype */
 {
@@ -1669,7 +1664,6 @@ var DatepickerFormInput = Backbone.View.extend(
         return this.$el;
     }
 });
-
 var TypeaheadFormInput = Backbone.View.extend(
 /** @lends TypeaheadFormInput.prototype */
 {
@@ -1935,7 +1929,6 @@ var TypeaheadFormInput = Backbone.View.extend(
         return this.$el;
     }
 });
-
 var ActionProgressPanel = Backbone.View.extend(
 /** @lends ActionProgressPanel.prototype */
 {
@@ -2014,7 +2007,6 @@ var ActionProgressPanel = Backbone.View.extend(
         return this.$el;
     }
 });
-
 
 var DatatableColumnVisibilityControl = Backbone.View.extend(
 /** @lends DatatableColumnVisibilityControl.prototype */
@@ -2117,7 +2109,6 @@ var DatatableColumnVisibilityControl = Backbone.View.extend(
             );
     }
 });
-
 var FormNavigation = Backbone.View.extend(
 /** @lends FormNavigation.prototype */
 {
@@ -2219,7 +2210,6 @@ var FormNavigation = Backbone.View.extend(
         }
     }
 });
-
 
 var ModalForm = Backbone.View.extend(
 /** @lends ModalForm.prototype */
@@ -2446,7 +2436,6 @@ var ModalForm = Backbone.View.extend(
         return this.$el;
     }
 });
-
 
 var DataTableView = Backbone.View.extend(
 /** @lends DataTableView.prototype */
@@ -2917,13 +2906,13 @@ var DataTableView = Backbone.View.extend(
      * @typedef {Backbone-View} DataTableView
      * @class
      * @classdesc This view renders and controls the DataTableView jQuery plugin.
-     * @version 1.0.2
+     * @version 1.0.3
      * @constructs DataTableView
      * @extends Backbone-View
      * @param {object} options - configuration options for the View
      */
     'initialize':function(options) {
-        this.version = '1.0.2';
+        this.version = '1.0.3';
         // ASSERTION: the datatableConfig.ajax configuration value must an 
         // object so that the context property can be added
         if(options.url) {
@@ -3370,7 +3359,6 @@ $.fn.DataTableView = function(config) {
     // create and return a DataTableView object 
     return new DataTableView($.fn.DataTableView.defaults);
 }
-
 /**
  * Enum for the DataTableView mode values.
  * @readonly
@@ -3398,7 +3386,6 @@ $.fn.DataTableView.MODES = {
      */ 
     'MODIFY':5
 };
-
 /**
  * Enum for control layout orientation
  * @readonly
@@ -3411,7 +3398,6 @@ $.fn.DataTableView.LAYOUT_ORIENTATION = {
     /** A side-by-side style of layout */
     'HORIZONTAL':1
 };
-
 /**
  * Enum for the Action Types (Edit, Create) the form can have.
  * @readonly
@@ -3428,7 +3414,6 @@ $.fn.DataTableView.ACTION_TYPES = {
     'EDIT':3002001
 };
 
-
 /**
  * DataTable cell render function for timestamps (big-ass integers)
  * @global
@@ -3441,9 +3426,8 @@ $.fn.DataTableView.ACTION_TYPES = {
  * @return {string} A formatted date string representing the timestamp.
  */
 $.fn.DataTableView.timestampCellRender = function(data, type, full, meta) {
-    return _.isFinite(data) ? new Date(data).toLocaleDateString() : '';
+    return _.isFinite(data) ? moment.utc(data).format('MM/D/YYYY') : '';
 };
-
 
 /**
  * These are the default values for the DataTableView plugin.
@@ -3576,7 +3560,6 @@ $.fn.DataTableView.defaults = {
     
     'modalFormConfig':{}
 };
-
     
-    $.fn.DataTableView.VERSION = '1.0.2';
+    $.fn.DataTableView.VERSION = '1.0.3';
 })(jQuery);
