@@ -467,13 +467,13 @@ var DataTableView = Backbone.View.extend(
      * @typedef {Backbone-View} DataTableView
      * @class
      * @classdesc This view renders and controls the DataTableView jQuery plugin.
-     * @version 1.0.2
+     * @version 1.0.3
      * @constructs DataTableView
      * @extends Backbone-View
      * @param {object} options - configuration options for the View
      */
     'initialize':function(options) {
-        this.version = '1.0.2';
+        this.version = '1.0.3';
         // ASSERTION: the datatableConfig.ajax configuration value must an 
         // object so that the context property can be added
         if(options.url) {

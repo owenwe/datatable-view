@@ -107,13 +107,20 @@
     <target name="help">
         <echo message="" />
         <echo message="DataTable View Ant Build Script" />
+        <echo message="targets:" />
         <echo message="" />
-		<echo message="compile" />
-		<echo message="combines and minifies source files into datatable-view.min.js and datatable-view.min.css" />
-		<echo message="" />
+	<echo message="compile" />
+	<echo message="combines and minifies source files into datatable-view.min.js and datatable-view.min.css" />
+	<echo message="" />
     	<echo message="combine" />
     	<echo message="combines .js and .css files in the src directory and creates datatable-view.js and datatable-view.css in the dist directory" />
     	<echo message="" />
+        <echo message="dist" />
+        <echo message="combines, compiles, and minifies source files, then generates documentation" />
+        <echo message="" />
+        <echo message="doc" />
+        <echo message="generates documentation from annotations in the source code (using jsdoc)" />
+        <echo message="" />
         <echo message="Help" />
         <echo message="This message information" />
     </target>

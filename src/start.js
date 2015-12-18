@@ -1,6 +1,6 @@
 /**
  * DataTableView jQuery plugin
- * @version 1.0.2
+ * @version 1.0.3
  * @author Wes Owen wowen@ccctechcenter.org
  */
 (function($){
